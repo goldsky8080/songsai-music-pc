@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RenderJobStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id         String      @id @default(cuid())
+  email      String      @unique
+  name       String?
+  renderJobs RenderJob[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model Track {
+  id          String      @id @default(cuid())
+  title       String
+  artist      String?
+  coverImage  String?
+  audioPath   String?
+  durationSec Int?
+  renderJobs  RenderJob[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model RenderJob {
+  id            String          @id @default(cuid())
+  status        RenderJobStatus @default(QUEUED)
+  sourcePath    String
+  outputPath    String?
+  preset        String?
+  ffmpegArgs    Json?
+  errorMessage  String?
+  trackId       String?
+  track         Track?          @relation(fields: [trackId], references: [id], onDelete: SetNull)
+  requestedById String?
+  requestedBy   User?           @relation(fields: [requestedById], references: [id], onDelete: SetNull)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}

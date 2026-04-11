@@ -1,0 +1,267 @@
+.page {
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, rgba(4, 11, 18, 0.78), rgba(4, 11, 18, 0.92)),
+    url("/songsai-music/img/bg-img/hero-songsai-main.png") center / cover no-repeat;
+  color: #f5f7fb;
+}
+
+.shell {
+  min-height: 100vh;
+  padding: 48px 24px;
+  display: grid;
+  grid-template-columns: minmax(320px, 560px) minmax(320px, 560px);
+  gap: 40px;
+  align-items: center;
+  justify-content: center;
+}
+
+.brandBlock {
+  max-width: 560px;
+}
+
+.eyebrow {
+  margin: 0 0 14px;
+  font-size: 13px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(216, 225, 238, 0.7);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(38px, 5vw, 72px);
+  line-height: 1.06;
+  color: #ffffff;
+}
+
+.description {
+  margin: 20px 0 0;
+  max-width: 520px;
+  font-size: 18px;
+  line-height: 1.8;
+  color: rgba(230, 235, 244, 0.82);
+}
+
+.stats {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.statCard {
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(10, 18, 32, 0.4);
+  backdrop-filter: blur(10px);
+}
+
+.statLabel {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(208, 217, 232, 0.7);
+}
+
+.statValue {
+  margin: 10px 0 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.panel {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.28);
+  color: #0b1220;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid rgba(11, 18, 32, 0.08);
+}
+
+.tab,
+.tabActive {
+  padding: 18px 20px;
+  border: 0;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tabActive {
+  background: #0b1220;
+  color: #fff;
+}
+
+.panelBody {
+  padding: 34px 34px 38px;
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 36px;
+  letter-spacing: 0.08em;
+}
+
+.panelSubtitle {
+  margin: 14px 0 0;
+  color: #566173;
+  line-height: 1.7;
+}
+
+.form {
+  margin-top: 28px;
+  display: grid;
+  gap: 16px;
+}
+
+.label {
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.input {
+  width: 100%;
+  height: 56px;
+  padding: 0 16px;
+  border: 1px solid rgba(11, 18, 32, 0.18);
+  background: #fff;
+  font-size: 15px;
+}
+
+.input:focus {
+  outline: 2px solid rgba(18, 96, 196, 0.24);
+  border-color: #1260c4;
+}
+
+.helper {
+  margin: 0;
+  font-size: 13px;
+  color: #6a7381;
+}
+
+.primaryButton {
+  height: 56px;
+  border: 0;
+  background: #0b1220;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.divider {
+  margin: 22px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #6a7381;
+  font-size: 13px;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(11, 18, 32, 0.1);
+}
+
+.secondaryButton {
+  height: 56px;
+  border: 1px solid rgba(11, 18, 32, 0.14);
+  background: #fff;
+  color: #0b1220;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.message,
+.error {
+  margin: 18px 0 0;
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.message {
+  background: rgba(20, 112, 69, 0.08);
+  color: #0e6f43;
+}
+
+.error {
+  background: rgba(197, 40, 40, 0.08);
+  color: #a92727;
+}
+
+.statusRow {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 14px;
+  background: rgba(10, 18, 32, 0.08);
+  color: #0b1220;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ghostButton {
+  border: 0;
+  background: transparent;
+  color: #0b1220;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 1100px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .page {
+    background-position: 62% center;
+  }
+
+  .shell {
+    padding: 28px 16px 36px;
+    gap: 22px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .panelBody {
+    padding: 24px 18px 28px;
+  }
+
+  .panelTitle {
+    font-size: 28px;
+  }
+}
