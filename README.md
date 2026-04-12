@@ -1,34 +1,15 @@
 # SongsAI Music PC
 
-`D:\one-music-gh-pages` 디자인을 바탕으로, `Next.js + React + TypeScript + PostgreSQL + Prisma + ffmpeg` 기준으로 다시 구성한 프로젝트입니다.
+현재 기준 문서는 `docs/` 폴더입니다.
 
-## 포함된 것
+## 시작 순서
 
-- 원본 songsai-music HTML 템플릿 전체 페이지를 Next.js 라우트로 매핑
-- 정적 자산을 `public/songsai-music`으로 이관
-- PostgreSQL 연결을 위한 Prisma 스키마
-- ffmpeg 실행을 위한 Node 유틸
-- 기본 상태 확인 API와 렌더 잡 API
+1. [문서 인덱스](D:\songsai-music-pc\docs\00_문서_인덱스.md)
+2. [프로젝트 개요](D:\songsai-music-pc\docs\01_프로젝트_개요.md)
+3. [아키텍처 기준서](D:\songsai-music-pc\docs\02_아키텍처_기준서.md)
+4. [현재 작업상태 및 다음 순서](D:\songsai-music-pc\docs\07_현재_작업상태_및_다음순서.md)
 
-## 시작
+## 참고
 
-1. `.env.example`을 참고해 `.env`를 만듭니다.
-2. `npm install`
-3. `npx prisma generate`
-4. `npm run dev`
-
-## 기본 라우트
-
-- `/`
-- `/albums`
-- `/event`
-- `/blog`
-- `/contact`
-- `/elements`
-- `/login`
-
-## API
-
-- `GET /api/health`
-- `GET /api/render-jobs`
-- `POST /api/render-jobs`
+- 루트에 있던 과거 메모와 중간 설계 문서는 `docs/archive/legacy-root-docs/`로 이동해 보관합니다.
+- 앞으로 새 기준 문서는 가능하면 `docs/` 안에만 추가합니다.

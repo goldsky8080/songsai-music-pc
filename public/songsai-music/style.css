@@ -997,10 +997,340 @@ img {
     @media only screen and (max-width: 767px) {
       .albums-slideshow .owl-next {
         right: 0; } }
-  .albums-slideshow:hover .owl-prev,
-  .albums-slideshow:hover .owl-next {
-    opacity: 1;
-    visibility: visible; }
+.albums-slideshow:hover .owl-prev,
+.albums-slideshow:hover .owl-next {
+  opacity: 1;
+  visibility: visible; }
+
+.songsai-recent-album .songsai-recent-cover-wrap {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  background: #0d1422;
+}
+
+.songsai-recent-album .songsai-recent-card-link,
+.songsai-recent-album .songsai-recent-title-link {
+  display: block;
+  color: inherit;
+}
+
+.songsai-recent-album.is-selected {
+  border: 1px solid #cc1573 !important;
+  background: #fff4fa !important;
+}
+
+.songsai-recent-album .songsai-recent-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.songsai-recent-album .songsai-recent-play {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+  font-size: 22px;
+  transition: 300ms ease;
+  pointer-events: none;
+}
+
+.songsai-recent-album .songsai-recent-play:hover,
+.songsai-recent-album .songsai-recent-play:focus {
+  background: #cc1573;
+  color: #fff;
+}
+
+.songsai-recent-album .album-info h5 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.songsai-recent-album .songsai-recent-meta {
+  font-size: 13px;
+  color: #6d6d6d;
+}
+
+.songsai-recent-album .songsai-recent-submeta {
+  font-size: 12px;
+  color: #cc1573;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.songsai-recent-player {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 28px;
+  align-items: center;
+  margin: -20px 0 40px;
+  padding: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, #f7f8fb 0%, #ffffff 100%);
+}
+
+@media only screen and (max-width: 767px) {
+  .songsai-recent-player {
+    grid-template-columns: 1fr;
+  }
+}
+
+.songsai-recent-player__cover img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.songsai-recent-player__eyebrow {
+  margin-bottom: 8px;
+  color: #cc1573;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.songsai-recent-player__title {
+  margin-bottom: 10px;
+}
+
+.songsai-recent-player__meta {
+  margin-bottom: 16px;
+  color: #6d6d6d;
+}
+
+.songsai-recent-player__lyrics {
+  margin-bottom: 18px;
+  color: #4b5563;
+  line-height: 1.7;
+}
+
+.songsai-recent-player__audio {
+  width: 100%;
+}
+
+.songsai-nav-link {
+  position: relative;
+}
+
+.songsai-nav-link.is-active {
+  color: #ffdfef !important;
+}
+
+.songsai-nav-link[data-menu-tooltip]::after {
+  content: attr(data-menu-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: -34px;
+  transform: translateX(-50%) translateY(4px);
+  background: rgba(0, 0, 0, 0.88);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 8px 10px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: 220ms ease;
+}
+
+.songsai-nav-link:hover::after,
+.songsai-nav-link:focus::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.header-area .songsaiMusic-main-menu .login-register-cart-button .login-register-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.songsai-header-link {
+  color: rgba(255, 255, 255, 0.86) !important;
+}
+
+.songsai-header-cta {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-width: 146px;
+  height: 44px;
+  padding: 0 18px;
+  background: linear-gradient(135deg, #ffffff 0%, #ffd7e8 100%);
+  color: #111827 !important;
+  border-radius: 999px;
+  box-shadow: 0 16px 32px rgba(204, 21, 115, 0.28);
+}
+
+.songsai-header-cta:hover,
+.songsai-header-cta:focus {
+  background: #fff;
+  color: #000 !important;
+  transform: translateY(-1px);
+}
+
+.songsai-assets-shell {
+  margin-bottom: 40px;
+}
+
+.songsai-assets-notice {
+  margin-bottom: 16px;
+  padding: 14px 18px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #f7f8fb;
+  color: #4b5563;
+}
+
+.songsai-assets-notice.is-error {
+  border-color: rgba(204, 21, 115, 0.18);
+  background: #fff4fa;
+  color: #9f1239;
+}
+
+.songsai-assets-player {
+  margin: 0;
+}
+
+.songsai-assets-grid .songsai-assets-item {
+  margin-bottom: 30px;
+}
+
+.songsai-assets-card {
+  height: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+}
+
+.songsai-assets-card__media {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #0d1422;
+}
+
+.songsai-assets-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.songsai-assets-status {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.82);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.songsai-assets-status.status-completed {
+  background: rgba(20, 184, 166, 0.92);
+}
+
+.songsai-assets-status.status-processing,
+.songsai-assets-status.status-queued {
+  background: rgba(59, 130, 246, 0.92);
+}
+
+.songsai-assets-status.status-failed {
+  background: rgba(225, 29, 72, 0.92);
+}
+
+.songsai-assets-card__info {
+  text-align: left !important;
+  padding: 18px 18px 22px !important;
+}
+
+.songsai-assets-card__time,
+.songsai-assets-card__download {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #6b7280;
+}
+
+.songsai-assets-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.songsai-assets-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 104px;
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid #111827;
+  background: #fff;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 220ms ease;
+}
+
+.songsai-assets-btn:hover,
+.songsai-assets-btn:focus {
+  background: #111827;
+  color: #fff;
+}
+
+.songsai-assets-btn--primary {
+  background: #111827;
+  color: #fff;
+}
+
+.songsai-assets-btn--primary:hover,
+.songsai-assets-btn--primary:focus {
+  background: #cc1573;
+  border-color: #cc1573;
+}
+
+.songsai-assets-btn--secondary {
+  background: #fff;
+  color: #111827;
+}
+
+.songsai-assets-btn--secondary:hover,
+.songsai-assets-btn--secondary:focus {
+  background: #111827;
+  color: #fff;
+}
+
+.songsai-assets-btn[disabled] {
+  cursor: not-allowed;
+  opacity: 0.45;
+  background: #f3f4f6;
+  color: #6b7280;
+  border-color: #d1d5db;
+}
+
+.songsai-assets-empty {
+  padding: 48px 32px;
+  text-align: center;
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  background: #fafafa;
+}
 
 /* :: 10.0 Songs Area CSS */
 .single-song-area {
@@ -1759,3 +2089,82 @@ img {
 /* ====== The End ====== */
 
 /*# sourceMappingURL=style.css.map */
+
+/* SongsAI custom assets overrides */
+.songsai-assets-page .browse-by-catagories,
+.songsai-assets-page .songsaiMusic-buy-now-area,
+.songsai-assets-page .add-area,
+.songsai-assets-page .songsaiMusic-songs-area,
+.songsai-assets-page .contact-area,
+.songsai-assets-page .single-album-area,
+.songsai-assets-page [data-assets-shell] {
+  display: none !important;
+}
+
+.songsai-assets-page .songsai-assets-section {
+  padding-top: 40px;
+}
+
+.songsai-assets-page .songsaiMusic-albums {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  height: auto !important;
+}
+
+.songsai-assets-page .songsaiMusic-albums .songsai-assets-item {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+}
+
+
+.songsai-assets-play-toggle {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  background: rgba(8, 14, 31, 0.68);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+}
+
+.songsai-assets-play-toggle:hover,
+.songsai-assets-play-toggle:focus {
+  background: rgba(233, 30, 99, 0.92);
+  border-color: rgba(233, 30, 99, 0.92);
+  transform: scale(1.04);
+}
+
+.songsai-assets-play-toggle.is-playing {
+  background: rgba(233, 30, 99, 0.92);
+  border-color: rgba(233, 30, 99, 0.92);
+}
+
+.songsai-assets-play-toggle.is-disabled,
+.songsai-assets-play-toggle:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.songsai-assets-item.is-playing .songsai-assets-card {
+  box-shadow: 0 20px 55px rgba(233, 30, 99, 0.18);
+}
+
+.songsai-assets-card__lyrics {
+  color: #5f5f5f;
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 20px;
+}

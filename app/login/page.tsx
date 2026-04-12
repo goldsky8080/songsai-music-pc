@@ -4,8 +4,9 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import {
-  PublicUser,
+  type PublicUser,
   SongsaiApiError,
+  buildSongsaiApiUrl,
   getSongsaiApiUrl,
   songsaiApiRequest,
 } from "@/lib/songsai-api";
@@ -67,8 +68,16 @@ function LoginPageContent() {
           setMessage(`${response.user.email} 계정으로 로그인되어 있습니다.`);
         }
       } catch (requestError) {
-        if (!cancelled && !(requestError instanceof SongsaiApiError && requestError.status === 401)) {
-          setError("현재 로그인 상태를 확인하지 못했습니다.");
+        if (!cancelled) {
+          if (requestError instanceof SongsaiApiError && requestError.status === 401) {
+            setUser(null);
+          } else {
+            setError(
+              requestError instanceof Error
+                ? requestError.message
+                : "현재 로그인 상태를 확인하지 못했습니다.",
+            );
+          }
         }
       } finally {
         if (!cancelled) {
@@ -77,7 +86,7 @@ function LoginPageContent() {
       }
     }
 
-    loadSession();
+    void loadSession();
 
     return () => {
       cancelled = true;
@@ -162,7 +171,7 @@ function LoginPageContent() {
 
   function handleGoogleLogin() {
     const redirectTo = typeof window !== "undefined" ? window.location.origin : "";
-    const url = new URL(`${getSongsaiApiUrl()}/api/v1/auth/google/start`);
+    const url = buildSongsaiApiUrl("/api/v1/auth/google/start");
 
     if (redirectTo) {
       url.searchParams.set("redirectTo", redirectTo);
@@ -178,8 +187,9 @@ function LoginPageContent() {
           <p className={styles.eyebrow}>songsai-music pc</p>
           <h1 className={styles.title}>음악 작업의 시작점을 하나로 묶는 로그인 허브</h1>
           <p className={styles.description}>
-            이메일 로그인, 회원가입, Google 로그인까지 모두 공용 `songsai-api` 인증으로 연결합니다.
-            이후에는 생성 이력, 자산 흐름, 작업 상태를 같은 계정 기준으로 이어갈 수 있습니다.
+            이메일 로그인, 회원가입, Google 로그인까지 모두 공용 songsai-api 인증으로
+            연결합니다. 이후에는 생성 이력, 자산 흐름, 작업 상태를 같은 계정 기준으로
+            이어갈 수 있습니다.
           </p>
           <div className={styles.stats}>
             <div className={styles.statCard}>
@@ -230,7 +240,7 @@ function LoginPageContent() {
                   <input
                     className={styles.input}
                     onChange={(event) => updateField("name", event.target.value)}
-                    placeholder="이름 또는 활동명"
+                    placeholder="이름 또는 표시명"
                     value={form.name}
                   />
                 </label>

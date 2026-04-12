@@ -17,8 +17,34 @@ export class SongsaiApiError extends Error {
   }
 }
 
-export function getSongsaiApiUrl() {
+function getConfiguredApiUrl() {
   return process.env.NEXT_PUBLIC_SONGSAI_API_URL?.replace(/\/$/, "") ?? "https://api.songsai.org";
+}
+
+function shouldUseLocalProxy(configured: string) {
+  return /^https?:\/\/localhost(?::\d+)?$/i.test(configured);
+}
+
+export function getSongsaiApiUrl() {
+  const configured = getConfiguredApiUrl();
+
+  if (shouldUseLocalProxy(configured)) {
+    return "/api/proxy";
+  }
+
+  return configured;
+}
+
+export function buildSongsaiApiUrl(path: string) {
+  const base = getSongsaiApiUrl();
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+
+  if (base.startsWith("/")) {
+    const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
+    return new URL(`${base}${normalizedPath}`, origin);
+  }
+
+  return new URL(normalizedPath, `${base}/`);
 }
 
 async function parseJson<T>(response: Response): Promise<T> {
@@ -31,11 +57,8 @@ async function parseJson<T>(response: Response): Promise<T> {
   return JSON.parse(text) as T;
 }
 
-export async function songsaiApiRequest<T>(
-  path: string,
-  init?: RequestInit,
-): Promise<T> {
-  const response = await fetch(`${getSongsaiApiUrl()}${path}`, {
+export async function songsaiApiRequest<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(buildSongsaiApiUrl(path).toString(), {
     ...init,
     credentials: "include",
     headers: {
@@ -45,7 +68,9 @@ export async function songsaiApiRequest<T>(
   });
 
   if (!response.ok) {
-    const payload = await parseJson<{ error?: string } | { error?: { formErrors?: string[] } }>(response);
+    const payload = await parseJson<{ error?: string } | { error?: { formErrors?: string[] } }>(
+      response,
+    );
     const message =
       typeof payload.error === "string"
         ? payload.error
