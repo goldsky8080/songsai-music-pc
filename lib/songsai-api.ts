@@ -4,6 +4,7 @@ export type PublicUser = {
   name?: string | null;
   profileImage?: string | null;
   role: "USER" | "DEVELOPER" | "ADMIN";
+  emailVerifiedAt?: string | null;
   createdAt?: string;
 };
 
@@ -57,6 +58,39 @@ async function parseJson<T>(response: Response): Promise<T> {
   return JSON.parse(text) as T;
 }
 
+type ErrorPayload = {
+  error?:
+    | string
+    | {
+        formErrors?: string[];
+        fieldErrors?: Record<string, string[] | undefined>;
+      };
+};
+
+function getErrorMessage(payload: ErrorPayload) {
+  if (typeof payload.error === "string") {
+    return payload.error;
+  }
+
+  const formMessage = payload.error?.formErrors?.[0];
+  if (formMessage) {
+    return formMessage;
+  }
+
+  const fieldErrors = payload.error?.fieldErrors;
+  if (fieldErrors) {
+    const firstFieldMessage = Object.values(fieldErrors)
+      .flat()
+      .find((value): value is string => typeof value === "string" && value.trim().length > 0);
+
+    if (firstFieldMessage) {
+      return firstFieldMessage;
+    }
+  }
+
+  return "요청 처리에 실패했습니다.";
+}
+
 export async function songsaiApiRequest<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(buildSongsaiApiUrl(path).toString(), {
     ...init,
@@ -68,13 +102,8 @@ export async function songsaiApiRequest<T>(path: string, init?: RequestInit): Pr
   });
 
   if (!response.ok) {
-    const payload = await parseJson<{ error?: string } | { error?: { formErrors?: string[] } }>(
-      response,
-    );
-    const message =
-      typeof payload.error === "string"
-        ? payload.error
-        : payload.error?.formErrors?.[0] ?? "요청 처리에 실패했습니다.";
+    const payload = await parseJson<ErrorPayload>(response);
+    const message = getErrorMessage(payload);
 
     throw new SongsaiApiError(message, response.status);
   }

@@ -42,7 +42,13 @@ type MusicItem = {
   downloadAvailableAt?: string | null;
 };
 
-type MusicListResponse = { items: MusicItem[] };
+type MusicPagination = {
+  offset: number;
+  limit: number;
+  total: number;
+  hasMore: boolean;
+};
+type MusicListResponse = { items: MusicItem[]; pagination?: MusicPagination };
 type CreateMusicResponse = { item: MusicItem };
 type VideoResponse = {
   item: {
@@ -105,6 +111,7 @@ const FALLBACK_COVERS = [
   "/songsai-music/img/bg-img/e5.jpg",
   "/songsai-music/img/bg-img/e6.jpg",
 ];
+const PAGE_SIZE = 6;
 
 function formatStatusLabel(status: string) {
   switch (status.toLowerCase()) {
@@ -250,17 +257,33 @@ function groupMusicItems(items: MusicItem[]) {
     }
   }
 
-  return Array.from(groups.values())
-    .map((group) => ({
-      ...group,
-      items: [...group.items].sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
-    }))
-    .slice(0, 6);
+  return Array.from(groups.values()).map((group) => ({
+    ...group,
+    items: [...group.items].sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
+  }));
+}
+
+function mergeMusicItems(existing: MusicItem[], incoming: MusicItem[], append: boolean) {
+  const base = append ? [...existing, ...incoming] : [...incoming, ...existing];
+  const seen = new Set<string>();
+  const merged: MusicItem[] = [];
+
+  for (const item of base) {
+    if (seen.has(item.id)) {
+      continue;
+    }
+
+    seen.add(item.id);
+    merged.push(item);
+  }
+
+  return merged;
 }
 
 export function CreateStudio() {
   const router = useRouter();
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const [user, setUser] = useState<PublicUser | null>(null);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [title, setTitle] = useState("");
@@ -284,6 +307,9 @@ export function CreateStudio() {
   const [playingItemId, setPlayingItemId] = useState<string | null>(null);
   const [playingUrl, setPlayingUrl] = useState<string | null>(null);
   const [, setCountdownTick] = useState(() => Date.now());
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [nextOffset, setNextOffset] = useState(0);
 
   const generatedTitle = useMemo(() => buildAutoTitle(autoTopic, autoEmotion), [autoEmotion, autoTopic]);
   const generatedLyrics = useMemo(
@@ -314,9 +340,11 @@ export function CreateStudio() {
 
   const groupedItems = useMemo(() => groupMusicItems(myItems), [myItems]);
 
-  async function loadMyItems() {
-    const mine = await songsaiApiRequest<MusicListResponse>("/api/v1/music?limit=12");
-    setMyItems(mine.items);
+  async function loadMyItems(offset = 0, append = false) {
+    const mine = await songsaiApiRequest<MusicListResponse>(`/api/v1/music?limit=${PAGE_SIZE}&offset=${offset}`);
+    setMyItems((current) => mergeMusicItems(current, mine.items, append));
+    setHasMore(mine.pagination?.hasMore ?? mine.items.length === PAGE_SIZE);
+    setNextOffset(offset + mine.items.length);
     return mine.items;
   }
 
@@ -330,7 +358,7 @@ export function CreateStudio() {
         });
         if (cancelled) return;
         setUser(response.user);
-        await loadMyItems();
+        await loadMyItems(0, false);
       } catch (requestError) {
         if (cancelled) return;
         if (requestError instanceof SongsaiApiError && requestError.status === 401) {
@@ -387,7 +415,7 @@ export function CreateStudio() {
     }
 
     const timer = window.setInterval(() => {
-      void loadMyItems();
+      void loadMyItems(0, false);
     }, 7000);
 
     return () => window.clearInterval(timer);
@@ -432,9 +460,9 @@ export function CreateStudio() {
         }),
       });
 
-      setMyItems((current) => [response.item, ...current.filter((item) => item.id !== response.item.id)].slice(0, 12));
+      setMyItems((current) => mergeMusicItems(current, [response.item], false));
       setMessage(`생성 요청을 등록했습니다. ${response.item.title || "제목 생성 대기 중"}`);
-      await loadMyItems();
+      await loadMyItems(0, false);
 
       setTitle("");
       setLyrics("");
@@ -469,7 +497,7 @@ export function CreateStudio() {
         method: "POST",
       });
       setMessage(`비디오 요청을 등록했습니다. ${response.item.status}`);
-      await loadMyItems();
+      await loadMyItems(0, false);
     } catch (requestError) {
       setError(
         requestError instanceof SongsaiApiError
@@ -508,6 +536,35 @@ export function CreateStudio() {
     setPlayingUrl(buildPlaybackUrl(item));
   }
 
+  useEffect(() => {
+    if (isCheckingSession || !user || !hasMore || isLoadingMore) {
+      return;
+    }
+
+    const target = loadMoreRef.current;
+    if (!target) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0];
+        if (!first?.isIntersecting) {
+          return;
+        }
+
+        setIsLoadingMore(true);
+        void loadMyItems(nextOffset, true).finally(() => {
+          setIsLoadingMore(false);
+        });
+      },
+      { rootMargin: "320px 0px" },
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [hasMore, isCheckingSession, isLoadingMore, nextOffset, user]);
+
   if (isCheckingSession) {
     return <div className={styles.loading}>로그인 상태와 생성 화면을 준비 중입니다...</div>;
   }
@@ -525,7 +582,7 @@ export function CreateStudio() {
               <p className={styles.eyebrow}>SongsAI Create</p>
               <h1 className={styles.introTitle}>음악 생성 스튜디오</h1>
               <p className={styles.introText}>
-                생성 직후에는 수노가 내려준 제목, 커버, 미리듣기 URL을 그대로 쓰고, 5분 뒤 사용자가 듣기/다운로드/비디오 생성을 할 때 최신 파일과 정보를 정리하는 흐름으로 맞춰가고 있습니다.
+                생성 직후에는 초기 제목, 커버, 미리듣기 URL을 먼저 쓰고, 5분 뒤 사용자가 듣기/다운로드/비디오 생성을 할 때 최신 파일과 정보를 정리하는 흐름으로 맞춰가고 있습니다.
               </p>
               <div className={styles.heroMeta}>
                 <span className={styles.heroChip}>{user.name || user.email}</span>
@@ -537,7 +594,7 @@ export function CreateStudio() {
             <article className={styles.panelCard}>
               <h2 className={styles.blockTitle}>Create</h2>
               <p className={styles.blockText}>
-                제목을 비우면 수노가 자동 제목을 만들고, 생성 직후에는 raw 미리듣기 URL로 먼저 듣습니다. 다운로드와 비디오 생성은 5분 뒤부터 가능합니다.
+                제목을 비우면 자동 제목 생성 흐름을 따르고, 생성 직후에는 초기 미리듣기 URL로 먼저 들을 수 있습니다. 다운로드와 비디오 생성은 5분 뒤부터 가능합니다.
               </p>
 
               <div className={styles.fieldGrid}>
@@ -551,7 +608,7 @@ export function CreateStudio() {
                     placeholder={
                       lyricMode === "auto"
                         ? "AI 자동 생성 모드에서는 제목을 따로 보내지 않습니다."
-                        : "비워두면 수노가 제목을 자동 생성합니다."
+                        : "비워두면 제목 자동 생성 흐름을 사용합니다."
                     }
                   />
                 </label>
@@ -766,7 +823,7 @@ export function CreateStudio() {
               </div>
 
               <p className={styles.metaLine}>
-                Create는 `POST /api/v1/music` 한 번으로 생성 요청을 보냅니다. 생성 직후에는 수노 초기 URL로 미리듣기만 가능하고, 5분 뒤부터 다운로드/비디오 생성이 가능합니다.
+                Create는 `POST /api/v1/music` 한 번으로 생성 요청을 보냅니다. 생성 직후에는 초기 미리듣기만 가능하고, 5분 뒤부터 다운로드/비디오 생성이 가능합니다.
               </p>
             </article>
 
@@ -791,6 +848,13 @@ export function CreateStudio() {
                             alt={activeItem.title || "generated music cover"}
                             className={styles.requestImage}
                           />
+                          <div className={styles.mediaHeader}>
+                            <h3 className={styles.mediaTitle}>{activeItem.title || "제목 생성 대기 중"}</h3>
+                            <p className={styles.mediaMeta}>
+                              {formatDate(activeItem.createdAt)}
+                              {activeItem.duration ? ` · ${activeItem.duration}` : ""}
+                            </p>
+                          </div>
                           {activeItem.mp3Url || activeItem.providerTaskId ? (
                             <button
                               type="button"
@@ -845,9 +909,7 @@ export function CreateStudio() {
                               이미지를 눌러 현재 슬라이드 곡을 미리듣기 할 수 있습니다.
                             </p>
                           ) : (
-                            <div className={styles.infoBox}>
-                              미리듣기 URL이 아직 없습니다. 생성이 조금 더 진행되면 수노가 내려준 URL로 먼저 연결됩니다.
-                            </div>
+                            <div className={styles.infoBox}>미리듣기 준비 중입니다.</div>
                           )}
 
                           <div className={styles.assetRow}>
@@ -880,6 +942,11 @@ export function CreateStudio() {
                   아직 생성 요청이 없습니다. 위 Create 영역에서 첫 곡을 만들면 여기에 카드가 바로 추가됩니다.
                 </div>
               )}
+              {groupedItems.length > 0 ? <div ref={loadMoreRef} className={styles.loadMoreSentinel} /> : null}
+              {isLoadingMore ? <p className={styles.loadMoreText}>이전 생성 요청을 더 불러오는 중입니다...</p> : null}
+              {!hasMore && groupedItems.length > 0 ? (
+                <p className={styles.loadMoreText}>모든 생성 요청을 불러왔습니다.</p>
+              ) : null}
             </article>
             <audio
               ref={previewAudioRef}

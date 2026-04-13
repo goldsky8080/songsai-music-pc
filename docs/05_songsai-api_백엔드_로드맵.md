@@ -116,3 +116,39 @@
 - 장기: 로컬 음악 생성 모델 fallback
 
 이 확장을 위해 provider 교체 가능한 구조를 유지한다.
+## 2026-04-14 추가 반영
+
+### 인증 / 계정
+
+- 이메일 인증 회원가입 흐름을 `songsai-api` 기준으로 실제 구현했다.
+- 일반 회원가입은 계정 생성 후 바로 로그인시키지 않고, 인증 메일 발송 후 `emailVerifiedAt` 완료 계정만 로그인 가능하게 막았다.
+- Google 로그인으로 생성/연결되는 계정은 `emailVerifiedAt`를 즉시 채워 일반 로그인 흐름과 충돌하지 않게 맞췄다.
+- 인증 메일 재발송 API를 추가했다.
+  - `POST /api/v1/auth/resend-verification`
+- 비밀번호 재설정 메일 요청 / 새 비밀번호 저장 API를 추가했다.
+  - `POST /api/v1/auth/request-password-reset`
+  - `POST /api/v1/auth/reset-password`
+- 현재 메일 발송은 Resend 환경변수 설정이 있어야 동작한다.
+  - `RESEND_API_KEY`
+  - `RESEND_FROM_EMAIL`
+  - `EMAIL_VERIFY_BASE_URL`
+  - `PASSWORD_RESET_BASE_URL`
+  - `FRONTEND_URL`
+
+### 관리자 API
+
+- 관리자/개발자만 접근 가능한 회원 목록 API를 추가했다.
+  - `GET /api/v1/admin/users`
+- 현재 1차 범위는 회원 운영 최소 기능이다.
+  - 이름
+  - 이메일
+  - role
+  - 이메일 인증 여부
+  - 가입일
+
+### 다음 우선순위
+
+1. 인증 메일 / 비밀번호 재설정 메일 운영 환경 설정 마감
+2. 관리자 회원 목록 필터/검색 추가
+3. 문의 메일 수신 webhook + DB 저장 + 관리자 수신함 구현
+4. 이후 음악/비디오 운영 상태를 관리자 영역으로 확장

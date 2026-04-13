@@ -15,7 +15,6 @@ export function VendorScripts() {
         { label: "Pricing", tooltip: "구독/충전", href: "/pricing" },
         { label: "Support", tooltip: "고객지원", href: "/support" },
       ];
-
       function getApiBase() {
         return window.location.hostname === "localhost"
           ? "/api/proxy"
@@ -160,13 +159,46 @@ export function VendorScripts() {
       }
 
       function syncHeaderActions() {
+        const wrapper = document.querySelector(".login-register-cart-button");
         const container = document.querySelector(".login-register-btn");
+        if (!(wrapper instanceof HTMLElement)) return;
         if (!(container instanceof HTMLElement)) return;
 
         container.innerHTML = \`
           <a href="/login" id="loginBtn" class="songsai-header-link">로그인</a>
-          <a href="/create" id="startBtn" class="songsai-header-cta">무료로 시작하기</a>
         \`;
+
+        let startButton = document.getElementById("startBtn");
+        if (!(startButton instanceof HTMLAnchorElement)) {
+          startButton = document.createElement("a");
+          startButton.id = "startBtn";
+          startButton.className = "songsai-header-cta songsai-header-create";
+          wrapper.insertBefore(startButton, wrapper.firstChild);
+        }
+
+        startButton.href = "/create";
+        startButton.textContent = "Create";
+        startButton.title = "Create";
+      }
+
+      async function handleHeaderLogout() {
+        try {
+          const response = await fetch(getApiBase() + "/api/v1/auth/logout", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              Accept: "application/json",
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error("로그아웃에 실패했습니다.");
+          }
+
+          window.location.href = "/";
+        } catch (error) {
+          window.alert(error instanceof Error ? error.message : "로그아웃에 실패했습니다.");
+        }
       }
 
       function syncHeroCtas() {
@@ -683,6 +715,7 @@ export function VendorScripts() {
 
       async function syncAssetsPage() {
         if (!isAssetsPage()) return;
+        if (document.querySelector("[data-react-assets-page='true']")) return;
 
         document.body.classList.add("songsai-assets-page");
 
@@ -777,8 +810,10 @@ export function VendorScripts() {
       }
 
       async function syncHeaderAuth() {
+        const container = document.querySelector(".login-register-btn");
         const loginButton = document.getElementById("loginBtn");
         const startButton = document.getElementById("startBtn");
+        if (!(container instanceof HTMLElement)) return;
         if (!(loginButton instanceof HTMLAnchorElement)) return;
 
         try {
@@ -797,6 +832,20 @@ export function VendorScripts() {
           loginButton.href = "/assets";
           loginButton.title = displayName;
           loginButton.classList.add("auth-user-link");
+
+          let logoutButton = document.getElementById("logoutBtn");
+          if (!(logoutButton instanceof HTMLButtonElement)) {
+            logoutButton = document.createElement("button");
+            logoutButton.id = "logoutBtn";
+            logoutButton.type = "button";
+            logoutButton.className = "songsai-header-logout";
+            logoutButton.textContent = "로그아웃";
+            container.appendChild(logoutButton);
+          }
+
+          logoutButton.onclick = function () {
+            void handleHeaderLogout();
+          };
 
           if (startButton instanceof HTMLAnchorElement) {
             startButton.textContent = "Create";
