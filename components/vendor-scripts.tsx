@@ -10,7 +10,7 @@ export function VendorScripts() {
       const configuredApiBase = ${JSON.stringify(songsaiApiUrl)};
       const navItems = [
         { label: "Home", tooltip: "홈", href: "/" },
-        { label: "Create", tooltip: "AI 생성", href: "/login" },
+        { label: "Create", tooltip: "AI 생성", href: "/create" },
         { label: "My Assets", tooltip: "내 자산", href: "/assets" },
         { label: "Pricing", tooltip: "구독/충전", href: "/pricing" },
         { label: "Support", tooltip: "고객지원", href: "/support" },
@@ -165,7 +165,7 @@ export function VendorScripts() {
 
         container.innerHTML = \`
           <a href="/login" id="loginBtn" class="songsai-header-link">로그인</a>
-          <a href="/login" id="startBtn" class="songsai-header-cta">무료로 시작하기</a>
+          <a href="/create" id="startBtn" class="songsai-header-cta">무료로 시작하기</a>
         \`;
       }
 
@@ -176,13 +176,13 @@ export function VendorScripts() {
         const [primaryButton, secondaryButton] = heroButtons;
 
         if (primaryButton instanceof HTMLAnchorElement) {
-          primaryButton.href = "/login";
+          primaryButton.href = "/create";
           primaryButton.textContent = "지금 바로 곡 만들기";
           primaryButton.classList.add("songsaiMusic-btn", "btn-2");
         }
 
         if (secondaryButton instanceof HTMLAnchorElement) {
-          secondaryButton.href = "/login";
+          secondaryButton.href = "/create";
           secondaryButton.textContent = "지금 바로 곡 만들기";
           secondaryButton.classList.add("songsaiMusic-btn", "btn-2");
         }
@@ -751,7 +751,7 @@ export function VendorScripts() {
                 <div class="songsai-assets-empty">
                   <h3>아직 생성한 곡이 없습니다</h3>
                   <p>Create에서 첫 곡을 생성하면 여기에서 재생, 다운로드 가능 시간, 상태를 확인할 수 있습니다.</p>
-                  <a href="/login" class="songsaiMusic-btn btn-2">지금 바로 곡 만들기</a>
+                  <a href="/create" class="songsaiMusic-btn btn-2">지금 바로 곡 만들기</a>
                 </div>
               </div>
             \`;
@@ -800,7 +800,7 @@ export function VendorScripts() {
 
           if (startButton instanceof HTMLAnchorElement) {
             startButton.textContent = "Create";
-            startButton.href = "/login";
+            startButton.href = "/create";
             startButton.title = "AI 생성";
           }
         } catch (error) {

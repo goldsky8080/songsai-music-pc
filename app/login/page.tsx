@@ -33,6 +33,8 @@ function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const authError = searchParams.get("authError");
+  const nextPath = searchParams.get("next") || "/";
+  const safeNextPath = nextPath.startsWith("/") ? nextPath : "/";
 
   const [mode, setMode] = useState<AuthMode>("login");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -132,7 +134,7 @@ function LoginPageContent() {
       );
 
       window.setTimeout(() => {
-        router.push("/");
+        router.push(safeNextPath as Parameters<typeof router.push>[0]);
         router.refresh();
       }, 700);
     } catch (requestError) {
@@ -175,6 +177,10 @@ function LoginPageContent() {
 
     if (redirectTo) {
       url.searchParams.set("redirectTo", redirectTo);
+    }
+
+    if (safeNextPath) {
+      url.searchParams.set("next", safeNextPath);
     }
 
     window.location.href = url.toString();
