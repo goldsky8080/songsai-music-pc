@@ -252,6 +252,26 @@ function buildVideoDownloadUrl(item: MusicItem) {
   return buildSongsaiApiUrl(`/api/v1/music/${item.id}/video/download`).toString();
 }
 
+function getVideoProgress(item: MusicItem) {
+  if (item.canDownloadVideo && item.videoStatus === "completed") {
+    return { label: "비디오 생성 완료", detail: "비디오 다운로드가 가능합니다.", percent: 100, tone: "complete" as const };
+  }
+
+  if (item.videoStatus === "processing") {
+    return { label: "비디오 렌더링 중", detail: "음원과 커버 이미지로 영상을 만들고 있습니다.", percent: 65, tone: "active" as const };
+  }
+
+  if (item.videoStatus === "queued") {
+    return { label: "비디오 생성 대기 중", detail: "요청이 큐에 등록되어 순서를 기다리고 있습니다.", percent: 35, tone: "active" as const };
+  }
+
+  if (item.videoStatus === "failed") {
+    return { label: "비디오 생성 실패", detail: "다시 비디오 생성을 요청해 주세요.", percent: 100, tone: "failed" as const };
+  }
+
+  return null;
+}
+
 function groupMusicItems(items: MusicItem[]) {
   const groups = new Map<string, MusicGroup>();
 
@@ -854,6 +874,7 @@ export function CreateStudio() {
                       activeItem.videoStatus === "queued" || activeItem.videoStatus === "processing";
                     const canCreateVideo =
                       ready && Boolean(activeItem.canCreateVideo) && !canDownloadVideo && !isVideoPending;
+                    const videoProgress = getVideoProgress(activeItem);
 
                     return (
                       <article key={group.id} className={styles.requestCard}>
@@ -926,6 +947,19 @@ export function CreateStudio() {
                           ) : (
                             <div className={styles.infoBox}>미리듣기 준비 중입니다.</div>
                           )}
+
+                          {videoProgress ? (
+                            <div className={`${styles.videoProgress} ${styles[videoProgress.tone]}`}>
+                              <div className={styles.videoProgressHeader}>
+                                <span>{videoProgress.label}</span>
+                                <strong>{videoProgress.percent}%</strong>
+                              </div>
+                              <div className={styles.videoProgressTrack}>
+                                <span style={{ width: `${videoProgress.percent}%` }} />
+                              </div>
+                              <p>{videoProgress.detail}</p>
+                            </div>
+                          ) : null}
 
                           <div className={styles.assetRow}>
                             <a

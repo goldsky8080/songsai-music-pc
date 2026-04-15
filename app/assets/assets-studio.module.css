@@ -339,6 +339,67 @@
   display: none;
 }
 
+.videoProgress {
+  order: 3;
+  display: grid;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.videoProgressHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.videoProgressHeader strong {
+  color: #f4c3a4;
+}
+
+.videoProgressTrack {
+  overflow: hidden;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.videoProgressTrack span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #f4c3a4, #fff3ea);
+  transition: width 0.35s ease;
+}
+
+.videoProgress p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.complete .videoProgressTrack span {
+  background: linear-gradient(90deg, #a7f3d0, #eef8f1);
+}
+
+.complete .videoProgressHeader strong {
+  color: #a7f3d0;
+}
+
+.failed .videoProgressTrack span {
+  background: linear-gradient(90deg, #fca5a5, #fff0eb);
+}
+
+.failed .videoProgressHeader strong {
+  color: #fca5a5;
+}
+
 .assetRow {
   order: 4;
   display: flex;
