@@ -252,26 +252,23 @@ function buildVideoDownloadUrl(item: MusicItem) {
   return buildSongsaiApiUrl(`/api/v1/music/${item.id}/video/download`).toString();
 }
 
-function getSimulatedVideoProgress(item: MusicItem, nowMs: number) {
+function getSimulatedVideoProgress(item: MusicItem, nowMs: number, startedAtMs?: number | null) {
   if (item.videoStatus === "completed" || item.canDownloadVideo) {
     return null;
   }
 
-  if (item.videoStatus !== "queued" && item.videoStatus !== "processing") {
+  if (!startedAtMs && item.videoStatus !== "queued" && item.videoStatus !== "processing") {
     return null;
   }
 
-  const startedAt = new Date(item.updatedAt || item.createdAt).getTime();
+  const startedAt = startedAtMs ?? new Date(item.updatedAt || item.createdAt).getTime();
   const safeStartedAt = Number.isFinite(startedAt) ? startedAt : nowMs;
   const elapsedSeconds = Math.max(0, (nowMs - safeStartedAt) / 1000);
   const percent = Math.min(95, Math.max(12, Math.round(12 + elapsedSeconds * 0.9)));
 
   return {
-    label: item.videoStatus === "queued" ? "비디오 생성 대기 중" : "비디오 생성 중",
-    detail:
-      item.videoStatus === "queued"
-        ? "큐에 등록되었고 곧 렌더링이 시작됩니다."
-        : "서버에서 음원과 커버 이미지를 합쳐 영상을 만들고 있습니다.",
+    label: item.videoStatus === "processing" ? "비디오 생성 중" : "비디오 생성 준비 중",
+    detail: "프론트에서 진행 상태를 표시하고 있습니다. 완료되면 자동으로 다운로드 상태로 전환됩니다.",
     percent,
   };
 }
@@ -342,6 +339,7 @@ export function CreateStudio() {
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [nextOffset, setNextOffset] = useState(0);
+  const [videoProgressStarts, setVideoProgressStarts] = useState<Record<string, number>>({});
 
   const generatedTitle = useMemo(() => buildAutoTitle(autoTopic, autoEmotion), [autoEmotion, autoTopic]);
   const generatedLyrics = useMemo(
@@ -375,6 +373,15 @@ export function CreateStudio() {
   async function loadMyItems(offset = 0, append = false) {
     const mine = await songsaiApiRequest<MusicListResponse>(`/api/v1/music?limit=${PAGE_SIZE}&offset=${offset}`);
     setMyItems((current) => mergeMusicItems(current, mine.items, append));
+    setVideoProgressStarts((current) => {
+      const next = { ...current };
+      for (const item of mine.items) {
+        if (item.canDownloadVideo || item.videoStatus === "completed" || item.videoStatus === "failed") {
+          delete next[item.id];
+        }
+      }
+      return next;
+    });
     setHasMore(mine.pagination?.hasMore ?? mine.items.length === PAGE_SIZE);
     setNextOffset(offset + mine.items.length);
     return mine.items;
@@ -523,6 +530,7 @@ export function CreateStudio() {
     setIsCreatingVideoId(item.id);
     setError(null);
     setMessage(null);
+    setVideoProgressStarts((current) => ({ ...current, [item.id]: Date.now() }));
 
     try {
       const response = await songsaiApiRequest<VideoResponse>(`/api/v1/music/${item.id}/video`, {
@@ -878,7 +886,11 @@ export function CreateStudio() {
                       activeItem.videoStatus === "queued" || activeItem.videoStatus === "processing";
                     const canCreateVideo =
                       ready && Boolean(activeItem.canCreateVideo) && !canDownloadVideo && !isVideoPending;
-                    const videoProgress = getSimulatedVideoProgress(activeItem, progressTick);
+                    const videoProgress = getSimulatedVideoProgress(
+                      activeItem,
+                      progressTick,
+                      videoProgressStarts[activeItem.id],
+                    );
 
                     return (
                       <article key={group.id} className={styles.requestCard}>
