@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 
 import { AdRails } from "@/components/ad-rails";
@@ -24,7 +25,9 @@ export default function ExplorePage() {
         </div>
       </section>
       <AdRails railTop={560}>
-        <ExploreStudio />
+        <Suspense fallback={null}>
+          <ExploreStudio />
+        </Suspense>
       </AdRails>
       <SiteFooter />
     </>
