@@ -40,7 +40,10 @@ type MusicItem = {
   canListen?: boolean;
   canDownload?: boolean;
   canCreateVideo?: boolean;
+  canDownloadVideo?: boolean;
   downloadAvailableAt?: string | null;
+  videoId?: string | null;
+  videoStatus?: string | null;
 };
 
 type MusicPagination = {
@@ -243,6 +246,10 @@ function buildPlaybackUrl(item: MusicItem) {
 
 function buildDownloadUrl(item: MusicItem) {
   return buildSongsaiApiUrl(`/api/v1/music/${item.id}/download`).toString();
+}
+
+function buildVideoDownloadUrl(item: MusicItem) {
+  return buildSongsaiApiUrl(`/api/v1/music/${item.id}/video/download`).toString();
 }
 
 function groupMusicItems(items: MusicItem[]) {
@@ -840,6 +847,13 @@ export function CreateStudio() {
                     const activeIndex = Math.min(activeSlides[group.id] ?? 0, Math.max(group.items.length - 1, 0));
                     const activeItem = group.items[activeIndex];
                     const ready = isStabilized(activeItem.createdAt);
+                    const canDownloadVideo = Boolean(
+                      activeItem.canDownloadVideo && activeItem.videoId && activeItem.videoStatus === "completed",
+                    );
+                    const isVideoPending =
+                      activeItem.videoStatus === "queued" || activeItem.videoStatus === "processing";
+                    const canCreateVideo =
+                      ready && Boolean(activeItem.canCreateVideo) && !canDownloadVideo && !isVideoPending;
 
                     return (
                       <article key={group.id} className={styles.requestCard}>
@@ -924,10 +938,15 @@ export function CreateStudio() {
                             >
                               다운로드
                             </a>
+                            {canDownloadVideo ? (
+                              <a href={buildVideoDownloadUrl(activeItem)} className={styles.assetButton}>
+                                비디오 다운로드
+                              </a>
+                            ) : null}
                             <button
                               type="button"
-                              className={ready ? styles.assetButton : styles.assetButtonDisabled}
-                              disabled={!ready || isCreatingVideoId === activeItem.id}
+                              className={canDownloadVideo ? styles.hiddenAudio : canCreateVideo ? styles.assetButton : styles.assetButtonDisabled}
+                              disabled={canDownloadVideo || !canCreateVideo || isCreatingVideoId === activeItem.id}
                               onClick={() => void handleCreateVideo(activeItem)}
                             >
                               {isCreatingVideoId === activeItem.id ? "비디오 준비 중..." : "비디오 생성"}
