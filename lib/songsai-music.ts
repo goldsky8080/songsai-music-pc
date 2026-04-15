@@ -4,14 +4,10 @@ import path from "node:path";
 export type SongsaiMusicRouteKey =
   | ""
   | "albums"
-  | "assets"
   | "blog"
   | "contact"
-  | "pricing"
-  | "support"
   | "elements"
-  | "event"
-  | "login";
+  | "event";
 
 type PageConfig = {
   fileName: string;
@@ -21,14 +17,10 @@ type PageConfig = {
 const pageMap: Record<SongsaiMusicRouteKey, PageConfig> = {
   "": { fileName: "index.html", route: "/" },
   albums: { fileName: "albums-store.html", route: "/albums" },
-  assets: { fileName: "albums-store.html", route: "/assets" },
   blog: { fileName: "blog.html", route: "/blog" },
   contact: { fileName: "contact.html", route: "/contact" },
-  pricing: { fileName: "event.html", route: "/pricing" },
-  support: { fileName: "contact.html", route: "/support" },
   elements: { fileName: "elements.html", route: "/elements" },
   event: { fileName: "event.html", route: "/event" },
-  login: { fileName: "login.html", route: "/login" },
 };
 
 const templateRoot = path.join(process.cwd(), "templates", "songsai-music");
