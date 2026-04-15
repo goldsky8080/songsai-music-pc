@@ -162,6 +162,7 @@ function buildRecentAudioUrl(item: HomeSong) {
 export function HomeStudio() {
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const selectedAudioRef = useRef<HTMLAudioElement | null>(null);
+  const pendingAutoplayTrackIdRef = useRef<string | null>(null);
 
   const [heroIndex, setHeroIndex] = useState(0);
   const [recentSongs, setRecentSongs] = useState<HomeSong[]>([]);
@@ -232,17 +233,32 @@ export function HomeStudio() {
   useEffect(() => {
     const audio = selectedAudioRef.current;
     if (!audio || !selectedTrack) return;
-    audio.src = buildRecentAudioUrl(selectedTrack);
+
+    const nextSrc = buildRecentAudioUrl(selectedTrack);
+    const shouldAutoplay = pendingAutoplayTrackIdRef.current === selectedTrack.id;
+
+    const handleCanPlay = () => {
+      if (!shouldAutoplay) return;
+      void audio.play().catch(() => undefined);
+      pendingAutoplayTrackIdRef.current = null;
+    };
+
+    audio.pause();
+    audio.src = nextSrc;
     audio.load();
+
+    if (shouldAutoplay) {
+      audio.addEventListener("canplay", handleCanPlay, { once: true });
+    }
+
+    return () => {
+      audio.removeEventListener("canplay", handleCanPlay);
+    };
   }, [selectedTrack]);
 
   function handleSelectRecentTrack(item: HomeSong) {
+    pendingAutoplayTrackIdRef.current = item.id;
     setSelectedTrackId(item.id);
-    const audio = selectedAudioRef.current;
-    if (!audio) return;
-    audio.src = buildRecentAudioUrl(item);
-    audio.load();
-    void audio.play().catch(() => undefined);
   }
 
   function handleTogglePreview(item: HomeSong, playKey = item.id) {
