@@ -156,24 +156,28 @@ function buildVideoDownloadUrl(item: MusicItem) {
   return buildSongsaiApiUrl(`/api/v1/music/${item.id}/video/download`).toString();
 }
 
-function getVideoProgress(item: MusicItem) {
-  if (item.canDownloadVideo && item.videoStatus === "completed") {
-    return { label: "비디오 생성 완료", detail: "비디오 다운로드가 가능합니다.", percent: 100, tone: "complete" as const };
+function getSimulatedVideoProgress(item: MusicItem, nowMs: number) {
+  if (item.videoStatus === "completed" || item.canDownloadVideo) {
+    return null;
   }
 
-  if (item.videoStatus === "processing") {
-    return { label: "비디오 렌더링 중", detail: "음원과 커버 이미지로 영상을 만들고 있습니다.", percent: 65, tone: "active" as const };
+  if (item.videoStatus !== "queued" && item.videoStatus !== "processing") {
+    return null;
   }
 
-  if (item.videoStatus === "queued") {
-    return { label: "비디오 생성 대기 중", detail: "요청이 큐에 등록되어 순서를 기다리고 있습니다.", percent: 35, tone: "active" as const };
-  }
+  const startedAt = new Date(item.updatedAt || item.createdAt).getTime();
+  const safeStartedAt = Number.isFinite(startedAt) ? startedAt : nowMs;
+  const elapsedSeconds = Math.max(0, (nowMs - safeStartedAt) / 1000);
+  const percent = Math.min(95, Math.max(12, Math.round(12 + elapsedSeconds * 0.9)));
 
-  if (item.videoStatus === "failed") {
-    return { label: "비디오 생성 실패", detail: "다시 비디오 생성을 요청해 주세요.", percent: 100, tone: "failed" as const };
-  }
-
-  return null;
+  return {
+    label: item.videoStatus === "queued" ? "비디오 생성 대기 중" : "비디오 생성 중",
+    detail:
+      item.videoStatus === "queued"
+        ? "큐에 등록되었고 곧 렌더링이 시작됩니다."
+        : "서버에서 음원과 커버 이미지를 합쳐 영상을 만들고 있습니다.",
+    percent,
+  };
 }
 
 function groupMusicItems(items: MusicItem[]) {
@@ -229,7 +233,7 @@ export function AssetsStudio() {
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [nextOffset, setNextOffset] = useState(0);
-  const [, setCountdownTick] = useState(() => Date.now());
+  const [progressTick, setCountdownTick] = useState(() => Date.now());
 
   const groupedItems = useMemo(() => groupMusicItems(items), [items]);
 
@@ -518,7 +522,7 @@ export function AssetsStudio() {
                       activeItem.videoStatus === "queued" || activeItem.videoStatus === "processing";
                     const canCreateVideo =
                       ready && Boolean(activeItem.canCreateVideo) && !canDownloadVideo && !isVideoPending;
-                    const videoProgress = getVideoProgress(activeItem);
+                    const videoProgress = getSimulatedVideoProgress(activeItem, progressTick);
 
                     return (
                       <article key={group.id} className={styles.requestCard}>
@@ -629,7 +633,7 @@ export function AssetsStudio() {
                           )}
 
                           {videoProgress ? (
-                            <div className={`${styles.videoProgress} ${styles[videoProgress.tone]}`}>
+                            <div className={styles.videoProgress}>
                               <div className={styles.videoProgressHeader}>
                                 <span>{videoProgress.label}</span>
                                 <strong>{videoProgress.percent}%</strong>

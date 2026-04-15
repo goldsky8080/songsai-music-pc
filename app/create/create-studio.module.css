@@ -568,7 +568,7 @@
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, #f4c3a4, #fff3ea);
-  transition: width 0.35s ease;
+  transition: width 0.8s ease;
 }
 
 .videoProgress p {
@@ -576,22 +576,6 @@
   color: rgba(255, 255, 255, 0.68);
   font-size: 12px;
   line-height: 1.5;
-}
-
-.complete .videoProgressTrack span {
-  background: linear-gradient(90deg, #a7f3d0, #eef8f1);
-}
-
-.complete .videoProgressHeader strong {
-  color: #a7f3d0;
-}
-
-.failed .videoProgressTrack span {
-  background: linear-gradient(90deg, #fca5a5, #fff0eb);
-}
-
-.failed .videoProgressHeader strong {
-  color: #fca5a5;
 }
 
 .assetRow {
