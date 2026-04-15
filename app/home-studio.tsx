@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 
-import { songsaiApiRequest } from "@/lib/songsai-api";
-
 import styles from "./home-studio.module.css";
 
 type ExploreSort = "latest" | "weekly" | "monthly";
@@ -24,6 +22,20 @@ type HomeSong = {
 
 type ExploreResponse = { items: HomeSong[] };
 type RecentResponse = { items: HomeSong[] };
+
+async function requestHomePublicData<T>(path: string): Promise<T> {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const response = await fetch(`/api/proxy${normalizedPath}`, {
+    cache: "no-store",
+    credentials: "same-origin",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Home public request failed: ${response.status}`);
+  }
+
+  return response.json() as Promise<T>;
+}
 
 const heroSlides = [
   {
@@ -149,10 +161,10 @@ export function HomeStudio() {
 
     async function loadHomeData() {
       const [recentResult, weeklyResult, monthlyResult, latestResult] = await Promise.allSettled([
-        songsaiApiRequest<RecentResponse>("/api/v1/music/recent?limit=10", { cache: "no-store" }),
-        songsaiApiRequest<ExploreResponse>("/api/v1/explore?sort=weekly&limit=6&offset=0", { cache: "no-store" }),
-        songsaiApiRequest<ExploreResponse>("/api/v1/explore?sort=monthly&limit=6&offset=0", { cache: "no-store" }),
-        songsaiApiRequest<ExploreResponse>("/api/v1/explore?sort=latest&limit=6&offset=0", { cache: "no-store" }),
+        requestHomePublicData<RecentResponse>("/api/v1/music/recent?limit=10"),
+        requestHomePublicData<ExploreResponse>("/api/v1/explore?sort=weekly&limit=6&offset=0"),
+        requestHomePublicData<ExploreResponse>("/api/v1/explore?sort=monthly&limit=6&offset=0"),
+        requestHomePublicData<ExploreResponse>("/api/v1/explore?sort=latest&limit=6&offset=0"),
       ]);
 
       if (cancelled) return;

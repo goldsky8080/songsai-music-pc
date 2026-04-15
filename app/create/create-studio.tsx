@@ -884,13 +884,18 @@ export function CreateStudio() {
                     );
                     const isVideoPending =
                       activeItem.videoStatus === "queued" || activeItem.videoStatus === "processing";
-                    const canCreateVideo =
-                      ready && Boolean(activeItem.canCreateVideo) && !canDownloadVideo && !isVideoPending;
                     const videoProgress = getSimulatedVideoProgress(
                       activeItem,
                       progressTick,
                       videoProgressStarts[activeItem.id],
                     );
+                    const hasSimulatedVideoProgress = Boolean(videoProgress);
+                    const canCreateVideo =
+                      ready &&
+                      Boolean(activeItem.canCreateVideo) &&
+                      !canDownloadVideo &&
+                      !isVideoPending &&
+                      !hasSimulatedVideoProgress;
 
                     return (
                       <article key={group.id} className={styles.requestCard}>
@@ -999,7 +1004,11 @@ export function CreateStudio() {
                               disabled={canDownloadVideo || !canCreateVideo || isCreatingVideoId === activeItem.id}
                               onClick={() => void handleCreateVideo(activeItem)}
                             >
-                              {isCreatingVideoId === activeItem.id ? "비디오 준비 중..." : "비디오 생성"}
+                              {isCreatingVideoId === activeItem.id
+                                ? "비디오 준비 중..."
+                                : hasSimulatedVideoProgress
+                                  ? "비디오 생성 중..."
+                                  : "비디오 생성"}
                             </button>
                           </div>
                         </div>
