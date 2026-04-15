@@ -23,18 +23,42 @@ type HomeSong = {
 type ExploreResponse = { items: HomeSong[] };
 type RecentResponse = { items: HomeSong[] };
 
-async function requestHomePublicData<T>(path: string): Promise<T> {
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  const response = await fetch(`/api/proxy${normalizedPath}`, {
-    cache: "no-store",
-    credentials: "same-origin",
-  });
-
-  if (!response.ok) {
-    throw new Error(`Home public request failed: ${response.status}`);
+function getHomeFallbackApiBase() {
+  if (typeof window !== "undefined") {
+    return `${window.location.origin}/api/proxy`;
   }
 
-  return response.json() as Promise<T>;
+  return "/api/proxy";
+}
+
+async function requestHomePublicData<T>(path: string): Promise<T> {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const candidates = [
+    `${getHomeFallbackApiBase()}${normalizedPath}`,
+    `https://api.songsai.org${normalizedPath}`,
+  ];
+
+  let lastError: Error | null = null;
+
+  for (const target of candidates) {
+    try {
+      const response = await fetch(target, {
+        cache: "no-store",
+        credentials: target.startsWith("http") ? "include" : "same-origin",
+      });
+
+      if (!response.ok) {
+        lastError = new Error(`Home public request failed: ${response.status} @ ${target}`);
+        continue;
+      }
+
+      return (await response.json()) as T;
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(`Unknown home request failure @ ${target}`);
+    }
+  }
+
+  throw lastError ?? new Error(`Home public request failed: ${normalizedPath}`);
 }
 
 const heroSlides = [
@@ -166,6 +190,19 @@ export function HomeStudio() {
         requestHomePublicData<ExploreResponse>("/api/v1/explore?sort=monthly&limit=6&offset=0"),
         requestHomePublicData<ExploreResponse>("/api/v1/explore?sort=latest&limit=6&offset=0"),
       ]);
+
+      if (recentResult.status === "rejected") {
+        console.error("[home] recent request failed", recentResult.reason);
+      }
+      if (weeklyResult.status === "rejected") {
+        console.error("[home] weekly request failed", weeklyResult.reason);
+      }
+      if (monthlyResult.status === "rejected") {
+        console.error("[home] monthly request failed", monthlyResult.reason);
+      }
+      if (latestResult.status === "rejected") {
+        console.error("[home] latest request failed", latestResult.reason);
+      }
 
       if (cancelled) return;
 
