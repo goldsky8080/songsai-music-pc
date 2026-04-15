@@ -18,7 +18,7 @@ type PageProps = {
 
 export async function generateStaticParams() {
   return getKnownRoutes().map(({ key }) => ({
-    slug: key === "" ? [] : [key],
+    slug: key === "home" ? [] : [key],
   }));
 }
 

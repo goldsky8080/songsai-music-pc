@@ -2,12 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 export type SongsaiMusicRouteKey =
-  | ""
-  | "albums"
-  | "blog"
-  | "contact"
-  | "elements"
-  | "event";
+  | "home";
 
 type PageConfig = {
   fileName: string;
@@ -15,12 +10,7 @@ type PageConfig = {
 };
 
 const pageMap: Record<SongsaiMusicRouteKey, PageConfig> = {
-  "": { fileName: "index.html", route: "/" },
-  albums: { fileName: "albums-store.html", route: "/albums" },
-  blog: { fileName: "blog.html", route: "/blog" },
-  contact: { fileName: "contact.html", route: "/contact" },
-  elements: { fileName: "elements.html", route: "/elements" },
-  event: { fileName: "event.html", route: "/event" },
+  home: { fileName: "home.html", route: "/" },
 };
 
 const templateRoot = path.join(process.cwd(), "templates", "songsai-music");
@@ -59,7 +49,7 @@ function cleanupMarkup(markup: string) {
 
 export function resolveRouteKey(slug?: string[]): SongsaiMusicRouteKey | null {
   if (!slug || slug.length === 0) {
-    return "";
+    return "home";
   }
 
   if (slug.length !== 1) {
