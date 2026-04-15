@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   type PublicUser,
   SongsaiApiError,
+  buildSongsaiApiUrl,
   getSongsaiApiUrl,
   songsaiApiRequest,
 } from "@/lib/songsai-api";
@@ -237,11 +238,11 @@ function buildPlaybackUrl(item: MusicItem) {
     return item.mp3Url;
   }
 
-  return `/api/proxy/api/v1/music/${item.id}/download?inline=1`;
+  return buildSongsaiApiUrl(`/api/v1/music/${item.id}/download?inline=1`).toString();
 }
 
 function buildDownloadUrl(item: MusicItem) {
-  return `/api/proxy/api/v1/music/${item.id}/download`;
+  return buildSongsaiApiUrl(`/api/v1/music/${item.id}/download`).toString();
 }
 
 function groupMusicItems(items: MusicItem[]) {

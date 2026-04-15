@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { type PublicUser, SongsaiApiError, songsaiApiRequest } from "@/lib/songsai-api";
+import { type PublicUser, SongsaiApiError, buildSongsaiApiUrl, songsaiApiRequest } from "@/lib/songsai-api";
 
 import styles from "./assets-studio.module.css";
 
@@ -145,15 +145,15 @@ function buildPlaybackUrl(item: MusicItem) {
     return item.mp3Url;
   }
 
-  return `/api/proxy/api/v1/music/${item.id}/download?inline=1`;
+  return buildSongsaiApiUrl(`/api/v1/music/${item.id}/download?inline=1`).toString();
 }
 
 function buildDownloadUrl(item: MusicItem) {
-  return `/api/proxy/api/v1/music/${item.id}/download`;
+  return buildSongsaiApiUrl(`/api/v1/music/${item.id}/download`).toString();
 }
 
 function buildVideoDownloadUrl(item: MusicItem) {
-  return `/api/proxy/api/v1/music/${item.id}/video/download`;
+  return buildSongsaiApiUrl(`/api/v1/music/${item.id}/video/download`).toString();
 }
 
 function groupMusicItems(items: MusicItem[]) {
