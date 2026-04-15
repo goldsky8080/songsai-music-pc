@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 
 function getBackendBaseUrl() {
+  const internal =
+    process.env.SONGSAI_API_BASE_URL?.replace(/\/$/, "") ||
+    process.env.SONGSAI_INTERNAL_API_URL?.replace(/\/$/, "");
+
+  if (internal) {
+    return internal;
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    return "http://127.0.0.1:3100";
+  }
+
   return process.env.NEXT_PUBLIC_SONGSAI_API_URL?.replace(/\/$/, "") ?? "http://localhost:3100";
 }
 
