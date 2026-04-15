@@ -399,6 +399,11 @@ export function AssetsStudio() {
           : "이 곡을 private로 전환해 Explore에서 숨겼습니다.",
       );
     } catch (requestError) {
+      if (requestError instanceof SongsaiApiError && requestError.status === 401) {
+        setError("로그인이 만료되었습니다. 다시 로그인한 뒤 공개 상태를 변경해 주세요.");
+        return;
+      }
+
       if (requestError instanceof SongsaiApiError && requestError.status === 404) {
         setError("공개 상태 변경 API가 아직 연결되지 않았습니다. songsai-api에 visibility 엔드포인트를 먼저 추가해 주세요.");
         return;
