@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 
-import { VendorScripts } from "@/components/vendor-scripts";
-
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -20,10 +18,7 @@ export default function RootLayout({
         <link rel="icon" href="/songsai-music/img/core-img/favicon.ico" />
         <link rel="stylesheet" href="/songsai-music/style.css" />
       </head>
-      <body>
-        {children}
-        <VendorScripts />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
