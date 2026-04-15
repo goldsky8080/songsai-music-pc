@@ -69,37 +69,11 @@ const featureCards = [
   ["다운로드 자산", "오디오와 이미지 정리", "/songsai-music/img/bg-img/b2.jpg", ""],
 ] as const;
 
-const fallbackRecentSongs: HomeSong[] = [
-  { id: "fallback-recent-1", title: "가사 워크플로", imageUrl: "/songsai-music/img/bg-img/wt7.jpg", createdAt: new Date().toISOString(), lyrics: "세션 진행과 상태 확인", mp3Url: "/songsai-music/audio/dummy-audio.mp3" },
-  { id: "fallback-recent-2", title: "감성 발라드", imageUrl: "/songsai-music/img/bg-img/wt8.jpg", createdAt: new Date().toISOString(), lyrics: "잔잔한 피아노 무드", mp3Url: "/songsai-music/audio/dummy-audio.mp3" },
-  { id: "fallback-recent-3", title: "시네마틱 팝", imageUrl: "/songsai-music/img/bg-img/wt9.jpg", createdAt: new Date().toISOString(), lyrics: "넓은 공간감과 보컬", mp3Url: "/songsai-music/audio/dummy-audio.mp3" },
-  { id: "fallback-recent-4", title: "인스트루멘탈 세션", imageUrl: "/songsai-music/img/bg-img/wt10.jpg", createdAt: new Date().toISOString(), lyrics: "직접 입력과 생성 모드", mp3Url: "/songsai-music/audio/dummy-audio.mp3" },
-  { id: "fallback-recent-5", title: "가사 중심 프로젝트", imageUrl: "/songsai-music/img/bg-img/wt11.jpg", createdAt: new Date().toISOString(), lyrics: "스토리텔링 기반 구성", mp3Url: "/songsai-music/audio/dummy-audio.mp3" },
-];
-
-const fallbackWeeklySongs: HomeSong[] = [
-  { id: "fallback-weekly-1", title: "가사 워크플로", imageUrl: "/songsai-music/img/bg-img/wt1.jpg", artistName: "세션 진행과 상태 확인", createdAt: new Date().toISOString(), likeCount: 18 },
-  { id: "fallback-weekly-2", title: "감성 발라드", imageUrl: "/songsai-music/img/bg-img/wt2.jpg", artistName: "잔잔한 피아노 무드", createdAt: new Date().toISOString(), likeCount: 15 },
-  { id: "fallback-weekly-3", title: "시네마틱 팝", imageUrl: "/songsai-music/img/bg-img/wt3.jpg", artistName: "넓은 공간감과 보컬", createdAt: new Date().toISOString(), likeCount: 12 },
-  { id: "fallback-weekly-4", title: "인스트루멘탈 세션", imageUrl: "/songsai-music/img/bg-img/wt4.jpg", artistName: "직접 입력과 생성 모드", createdAt: new Date().toISOString(), likeCount: 10 },
-  { id: "fallback-weekly-5", title: "가사 중심 프로젝트", imageUrl: "/songsai-music/img/bg-img/wt5.jpg", artistName: "스토리텔링 기반 구성", createdAt: new Date().toISOString(), likeCount: 9 },
-];
-
-const fallbackMonthlySongs: HomeSong[] = [
-  { id: "fallback-monthly-1", title: "가사 워크플로", imageUrl: "/songsai-music/img/bg-img/wt7.jpg", artistName: "세션 진행과 상태 확인", createdAt: new Date().toISOString(), likeCount: 38, mp3Url: "/songsai-music/audio/dummy-audio.mp3" },
-  { id: "fallback-monthly-2", title: "감성 발라드", imageUrl: "/songsai-music/img/bg-img/wt8.jpg", artistName: "잔잔한 피아노 무드", createdAt: new Date().toISOString(), likeCount: 31, mp3Url: "/songsai-music/audio/dummy-audio.mp3" },
-  { id: "fallback-monthly-3", title: "시네마틱 팝", imageUrl: "/songsai-music/img/bg-img/wt9.jpg", artistName: "넓은 공간감과 보컬", createdAt: new Date().toISOString(), likeCount: 29, mp3Url: "/songsai-music/audio/dummy-audio.mp3" },
-  { id: "fallback-monthly-4", title: "인스트루멘탈 세션", imageUrl: "/songsai-music/img/bg-img/wt10.jpg", artistName: "직접 입력과 생성 모드", createdAt: new Date().toISOString(), likeCount: 26, mp3Url: "/songsai-music/audio/dummy-audio.mp3" },
-  { id: "fallback-monthly-5", title: "가사 중심 프로젝트", imageUrl: "/songsai-music/img/bg-img/wt11.jpg", artistName: "스토리텔링 기반 구성", createdAt: new Date().toISOString(), likeCount: 22, mp3Url: "/songsai-music/audio/dummy-audio.mp3" },
-];
-
-const fallbackLatestSongs: HomeSong[] = [
-  { id: "fallback-latest-1", title: "가사 워크플로", imageUrl: "/songsai-music/img/bg-img/pa1.jpg", artistName: "가사 워크플로", createdAt: new Date().toISOString() },
-  { id: "fallback-latest-2", title: "브랜드 캠페인 음악", imageUrl: "/songsai-music/img/bg-img/pa2.jpg", artistName: "브랜드 캠페인 음악", createdAt: new Date().toISOString() },
-  { id: "fallback-latest-3", title: "유튜브 배경음 제작", imageUrl: "/songsai-music/img/bg-img/pa3.jpg", artistName: "유튜브 배경음 제작", createdAt: new Date().toISOString() },
-  { id: "fallback-latest-4", title: "숏폼용 하이라이트", imageUrl: "/songsai-music/img/bg-img/pa4.jpg", artistName: "숏폼용 하이라이트", createdAt: new Date().toISOString() },
-  { id: "fallback-latest-5", title: "광고용 짧은 테마", imageUrl: "/songsai-music/img/bg-img/pa5.jpg", artistName: "광고용 짧은 테마", createdAt: new Date().toISOString() },
-];
+const emptyPublicMessages: Record<ExploreSort, string> = {
+  weekly: "이번 주 좋아요가 집계된 공개곡이 아직 없습니다.",
+  monthly: "이번 달 좋아요가 집계된 공개곡이 아직 없습니다.",
+  latest: "아직 공개된 곡이 없습니다.",
+};
 
 const usageScenes = [
   ["가사 워크플로", "/songsai-music/img/bg-img/pa1.jpg"],
@@ -154,13 +128,13 @@ export function HomeStudio() {
   const selectedAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const [heroIndex, setHeroIndex] = useState(0);
-  const [recentSongs, setRecentSongs] = useState<HomeSong[]>(fallbackRecentSongs);
+  const [recentSongs, setRecentSongs] = useState<HomeSong[]>([]);
   const [publicSongs, setPublicSongs] = useState<Record<ExploreSort, HomeSong[]>>({
-    weekly: fallbackWeeklySongs,
-    monthly: fallbackMonthlySongs,
-    latest: fallbackLatestSongs,
+    weekly: [],
+    monthly: [],
+    latest: [],
   });
-  const [selectedTrackId, setSelectedTrackId] = useState(fallbackRecentSongs[0].id);
+  const [selectedTrackId, setSelectedTrackId] = useState("");
   const [previewPlayingId, setPreviewPlayingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -174,32 +148,25 @@ export function HomeStudio() {
     let cancelled = false;
 
     async function loadHomeData() {
-      try {
-        const [recentResponse, weeklyResponse, monthlyResponse, latestResponse] = await Promise.all([
-          songsaiApiRequest<RecentResponse>("/api/v1/music/recent?limit=10", { cache: "no-store" }),
-          songsaiApiRequest<ExploreResponse>("/api/v1/explore?sort=weekly&limit=6&offset=0", { cache: "no-store" }),
-          songsaiApiRequest<ExploreResponse>("/api/v1/explore?sort=monthly&limit=6&offset=0", { cache: "no-store" }),
-          songsaiApiRequest<ExploreResponse>("/api/v1/explore?sort=latest&limit=6&offset=0", { cache: "no-store" }),
-        ]);
+      const [recentResult, weeklyResult, monthlyResult, latestResult] = await Promise.allSettled([
+        songsaiApiRequest<RecentResponse>("/api/v1/music/recent?limit=10", { cache: "no-store" }),
+        songsaiApiRequest<ExploreResponse>("/api/v1/explore?sort=weekly&limit=6&offset=0", { cache: "no-store" }),
+        songsaiApiRequest<ExploreResponse>("/api/v1/explore?sort=monthly&limit=6&offset=0", { cache: "no-store" }),
+        songsaiApiRequest<ExploreResponse>("/api/v1/explore?sort=latest&limit=6&offset=0", { cache: "no-store" }),
+      ]);
 
-        if (cancelled) return;
+      if (cancelled) return;
 
-        if (recentResponse.items.length > 0) {
-          setRecentSongs(recentResponse.items);
-          setSelectedTrackId(recentResponse.items[0].id);
-        }
-
-        setPublicSongs({
-          weekly: weeklyResponse.items.length > 0 ? weeklyResponse.items : fallbackWeeklySongs,
-          monthly: monthlyResponse.items.length > 0 ? monthlyResponse.items : fallbackMonthlySongs,
-          latest: latestResponse.items.length > 0 ? latestResponse.items : fallbackLatestSongs,
-        });
-      } catch {
-        if (!cancelled) {
-          setRecentSongs(fallbackRecentSongs);
-          setPublicSongs({ weekly: fallbackWeeklySongs, monthly: fallbackMonthlySongs, latest: fallbackLatestSongs });
-        }
+      if (recentResult.status === "fulfilled") {
+        setRecentSongs(recentResult.value.items);
+        setSelectedTrackId(recentResult.value.items[0]?.id ?? "");
       }
+
+      setPublicSongs({
+        weekly: weeklyResult.status === "fulfilled" ? weeklyResult.value.items : [],
+        monthly: monthlyResult.status === "fulfilled" ? monthlyResult.value.items : [],
+        latest: latestResult.status === "fulfilled" ? latestResult.value.items : [],
+      });
     }
 
     void loadHomeData();
@@ -209,13 +176,13 @@ export function HomeStudio() {
   }, []);
 
   const selectedTrack = useMemo(
-    () => recentSongs.find((item) => item.id === selectedTrackId) || recentSongs[0] || fallbackRecentSongs[0],
+    () => recentSongs.find((item) => item.id === selectedTrackId) || recentSongs[0] || null,
     [recentSongs, selectedTrackId],
   );
 
   useEffect(() => {
     const audio = selectedAudioRef.current;
-    if (!audio) return;
+    if (!audio || !selectedTrack) return;
     audio.src = buildRecentAudioUrl(selectedTrack);
     audio.load();
   }, [selectedTrack]);
@@ -318,24 +285,37 @@ export function HomeStudio() {
           </div>
 
           <div className={styles.recentPlayer}>
-            <div className={styles.recentPlayerCover}>
-              <img src={selectedTrack.imageUrl || "/songsai-music/img/bg-img/a1.jpg"} alt={selectedTrack.title || "선택된 곡"} />
-            </div>
-            <div className={styles.recentPlayerBody}>
-              <p className={styles.recentPlayerEyebrow}>Selected Track</p>
-              <h3 className={styles.recentPlayerTitle}>{selectedTrack.title || "재생할 곡을 선택해 주세요"}</h3>
-              <p className={styles.recentPlayerMeta}>{formatHomeDate(selectedTrack.createdAt)}</p>
-              <p className={styles.recentPlayerLyrics}>{compactText(selectedTrack.lyrics || selectedTrack.tags)}</p>
-              <audio ref={selectedAudioRef} className={styles.recentPlayerAudio} controls preload="none" />
-            </div>
+            {selectedTrack ? (
+              <>
+                <div className={styles.recentPlayerCover}>
+                  <img src={selectedTrack.imageUrl || "/songsai-music/img/bg-img/a1.jpg"} alt={selectedTrack.title || "선택된 곡"} />
+                </div>
+                <div className={styles.recentPlayerBody}>
+                  <p className={styles.recentPlayerEyebrow}>Selected Track</p>
+                  <h3 className={styles.recentPlayerTitle}>{selectedTrack.title || "재생할 곡을 선택해 주세요"}</h3>
+                  <p className={styles.recentPlayerMeta}>{formatHomeDate(selectedTrack.createdAt)}</p>
+                  <p className={styles.recentPlayerLyrics}>{compactText(selectedTrack.lyrics || selectedTrack.tags)}</p>
+                  <audio ref={selectedAudioRef} className={styles.recentPlayerAudio} controls preload="none" />
+                </div>
+              </>
+            ) : (
+              <div className={styles.emptyRecent}>
+                <p className={styles.recentPlayerEyebrow}>Selected Track</p>
+                <h3 className={styles.recentPlayerTitle}>최근 생성곡이 없습니다</h3>
+                <p className={styles.recentPlayerLyrics}>
+                  Create에서 곡을 만들면 완료된 최근 생성 결과가 이 영역에 표시됩니다.
+                </p>
+              </div>
+            )}
           </div>
 
-          <div className={`albums-slideshow ${styles.albumRail}`}>
-            {recentSongs.map((item, index) => (
+          {recentSongs.length > 0 ? (
+            <div className={`albums-slideshow ${styles.albumRail}`}>
+              {recentSongs.map((item, index) => (
               <button
                 key={item.id}
                 type="button"
-                className={`single-album ${styles.albumCard} ${selectedTrack.id === item.id ? styles.albumCardActive : ""}`}
+                className={`single-album ${styles.albumCard} ${selectedTrack?.id === item.id ? styles.albumCardActive : ""}`}
                 onClick={() => handleSelectRecentTrack(item)}
               >
                 <div className={styles.recentCoverWrap}>
@@ -349,8 +329,9 @@ export function HomeStudio() {
                   <p className={styles.recentMeta}>{formatHomeDate(item.createdAt)}</p>
                 </div>
               </button>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : null}
 
           <div className="row">
             {workflowCards.map(([title, description, imageUrl]) => (
@@ -436,9 +417,9 @@ export function HomeStudio() {
                 <p>songsai-music PC 버전은 단순 소개 페이지가 아니라 실제 음악 제작 흐름을 담는 작업 공간입니다.</p>
                 <div className="song-play-area">
                   <div className="song-name">
-                    <p>01. {selectedTrack.title || "대표 작업 미리듣기"}</p>
+                    <p>01. {selectedTrack?.title || "대표 작업 미리듣기"}</p>
                   </div>
-                  <audio controls preload="none" src={buildRecentAudioUrl(selectedTrack)} />
+                  {selectedTrack ? <audio controls preload="none" src={buildRecentAudioUrl(selectedTrack)} /> : null}
                 </div>
               </div>
             </div>
@@ -455,7 +436,7 @@ export function HomeStudio() {
                   <p>공개곡 Explore</p>
                   <h2>주간 좋아요 순위</h2>
                 </div>
-                {publicSongs.weekly.map((item) => (
+                {publicSongs.weekly.length > 0 ? publicSongs.weekly.map((item) => (
                   <a key={item.id} className="single-top-item d-flex songsai-home-ranked-item" href={buildArtistHref(item, "/explore?sort=weekly")}>
                     <div className="thumbnail songsai-home-thumb-with-play">
                       <img src={item.imageUrl || "/songsai-music/img/bg-img/wt1.jpg"} alt={item.title || "주간 공개곡"} />
@@ -476,7 +457,7 @@ export function HomeStudio() {
                       <p>{`${item.artistName || "SongsAI Artist"} · 좋아요 ${item.likeCount ?? 0}`}</p>
                     </div>
                   </a>
-                ))}
+                )) : <p className={styles.emptyListMessage}>{emptyPublicMessages.weekly}</p>}
               </div>
             </div>
 
@@ -486,7 +467,7 @@ export function HomeStudio() {
                   <p>공개곡 Explore</p>
                   <h2>월간 좋아요 순위</h2>
                 </div>
-                {publicSongs.monthly.map((item) => (
+                {publicSongs.monthly.length > 0 ? publicSongs.monthly.map((item) => (
                   <div key={item.id} className="single-new-item d-flex align-items-center justify-content-between songsai-home-public-item">
                     <div className="first-part d-flex align-items-center">
                       <div className="thumbnail">
@@ -506,7 +487,7 @@ export function HomeStudio() {
                       <span className="icon-play-button" />
                     </button>
                   </div>
-                ))}
+                )) : <p className={styles.emptyListMessage}>{emptyPublicMessages.monthly}</p>}
               </div>
             </div>
 
@@ -516,7 +497,7 @@ export function HomeStudio() {
                   <p>공개곡 Explore</p>
                   <h2>최신 공개곡</h2>
                 </div>
-                {publicSongs.latest.map((item) => (
+                {publicSongs.latest.length > 0 ? publicSongs.latest.map((item) => (
                   <a key={item.id} className="single-artists d-flex align-items-center songsai-home-latest-item" href={buildArtistHref(item, "/explore")}>
                     <div className="thumbnail songsai-home-thumb-with-play">
                       <img src={item.imageUrl || "/songsai-music/img/bg-img/pa1.jpg"} alt={item.title || "최신 공개곡"} />
@@ -537,7 +518,7 @@ export function HomeStudio() {
                       <p>{`${item.artistName || "SongsAI Artist"} · ${formatShortDate(item.createdAt)}`}</p>
                     </div>
                   </a>
-                ))}
+                )) : <p className={styles.emptyListMessage}>{emptyPublicMessages.latest}</p>}
               </div>
             </div>
           </div>

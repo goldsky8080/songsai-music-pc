@@ -65,6 +65,10 @@
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.08);
 }
 
+.emptyRecent {
+  grid-column: 1 / -1;
+}
+
 .recentPlayerCover img {
   display: block;
   width: 100%;
@@ -101,6 +105,14 @@
 
 .recentPlayerAudio {
   width: 100%;
+}
+
+.emptyListMessage {
+  margin: 0;
+  padding: 18px 0;
+  color: #5f5f5f;
+  font-size: 15px;
+  line-height: 1.7;
 }
 
 .albumRail {
