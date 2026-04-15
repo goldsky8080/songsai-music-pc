@@ -1,8 +1,8 @@
 .section {
-  background:
-    radial-gradient(circle at top left, rgba(182, 72, 34, 0.08), transparent 28rem),
-    radial-gradient(circle at bottom right, rgba(21, 38, 62, 0.06), transparent 24rem),
-    #fff;
+  width: min(1080px, calc(100% - 120px));
+  margin: 0 auto;
+  padding: 40px 0 88px;
+  background: transparent;
 }
 
 .introCard,
@@ -30,9 +30,10 @@
   margin-bottom: 30px;
   padding: 32px;
   background:
-    linear-gradient(135deg, rgba(17, 24, 39, 0.96), rgba(41, 54, 74, 0.94)),
-    #111827;
+    linear-gradient(135deg, rgba(8, 11, 20, 0.58), rgba(14, 20, 34, 0.7)),
+    url("/songsai-music/img/bg-img/breadcumb3.jpg") center/cover no-repeat;
   color: #fff;
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.24);
 }
 
 .eyebrow {
@@ -82,6 +83,88 @@
 .listCard {
   margin-bottom: 30px;
   padding: 28px;
+}
+
+.panelCard {
+  background:
+    linear-gradient(180deg, rgba(8, 11, 20, 0.56), rgba(12, 18, 30, 0.74)),
+    url("/songsai-music/img/bg-img/bg-5.jpg") center/cover no-repeat;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.28);
+}
+
+.panelCard .blockTitle,
+.panelCard .blockText,
+.panelCard .fieldLabel,
+.panelCard .optionLabel,
+.panelCard .checkText,
+.panelCard .hintRow,
+.panelCard .metaLine {
+  color: #f8fffb;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.38);
+}
+
+.panelCard .blockText,
+.panelCard .hintRow,
+.panelCard .metaLine {
+  color: rgba(233, 255, 246, 0.92);
+}
+
+.panelCard .textInput,
+.panelCard .textArea {
+  border: 1px solid rgba(196, 255, 227, 0.22);
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.panelCard .textInput::placeholder,
+.panelCard .textArea::placeholder {
+  color: rgba(222, 255, 241, 0.68);
+}
+
+.panelCard .textInput:focus,
+.panelCard .textArea:focus {
+  border-color: rgba(179, 255, 222, 0.82);
+  box-shadow:
+    0 0 0 4px rgba(99, 255, 190, 0.18),
+    0 0 26px rgba(99, 255, 190, 0.14);
+}
+
+.panelCard .optionButton {
+  border: 1px solid rgba(196, 255, 227, 0.18);
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(243, 255, 250, 0.94);
+}
+
+.panelCard .selectedOptionButton {
+  border: 1px solid rgba(185, 255, 226, 0.5);
+  background: linear-gradient(135deg, rgba(223, 255, 241, 0.96), rgba(170, 255, 216, 0.88));
+  color: #10231d;
+  box-shadow: 0 18px 34px rgba(99, 255, 190, 0.22);
+}
+
+.panelCard .checkRow {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.panelCard .autoBuilder {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+}
+
+.panelCard .previewBox {
+  border: 1px solid rgba(196, 255, 227, 0.16);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.panelCard .previewTitle {
+  color: #9effd5;
+  text-shadow: 0 0 18px rgba(84, 255, 190, 0.2);
+}
+
+.panelCard .previewBody {
+  color: rgba(241, 255, 250, 0.92);
 }
 
 .blockTitle {
@@ -577,5 +660,12 @@
 
   .requestGrid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .section {
+    width: min(100% - 28px, 1080px);
+    padding: 28px 0 64px;
   }
 }

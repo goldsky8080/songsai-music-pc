@@ -1,4 +1,7 @@
 .section {
+  width: min(1080px, calc(100% - 120px));
+  margin: 0 auto;
+  padding: 72px 0 88px;
   background:
     radial-gradient(circle at top left, rgba(182, 72, 34, 0.08), transparent 28rem),
     radial-gradient(circle at bottom right, rgba(21, 38, 62, 0.06), transparent 24rem),
@@ -261,6 +264,77 @@
   line-height: 1.8;
 }
 
+.mediaBadges {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 4;
+}
+
+.mediaBadges .badgeCompleted,
+.mediaBadges .badgeProcessing,
+.mediaBadges .badgeFailed,
+.mediaBadges .badgeQueued {
+  position: static;
+}
+
+.mediaTogglePublic,
+.mediaTogglePrivate {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.mediaTogglePublic {
+  background: #eef8f1;
+  color: #1c6a42;
+}
+
+.mediaTogglePrivate {
+  background: #fff0eb;
+  color: #b64822;
+}
+
+.visibilityRow {
+  display: none;
+}
+
+.visibilityChipPublic,
+.visibilityChipPrivate {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.visibilityChipPublic {
+  background: #eef8f1;
+  color: #1c6a42;
+}
+
+.visibilityChipPrivate {
+  background: #fff0eb;
+  color: #b64822;
+}
+
+.visibilityMeta {
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .previewHint {
   display: none;
 }
@@ -274,7 +348,8 @@
 }
 
 .assetButton,
-.assetButtonDisabled {
+.assetButtonDisabled,
+.assetButtonSecondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -290,6 +365,10 @@
   border: 1px solid rgba(244, 195, 164, 0.52);
   background: #fff3ea;
   color: #402416;
+}
+
+.assetButtonSecondary {
+  display: none;
 }
 
 .assetButtonDisabled {
@@ -393,5 +472,12 @@
 
   .requestGrid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .section {
+    width: min(100% - 28px, 1080px);
+    padding: 48px 0 64px;
   }
 }

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
-import { getPageTemplate } from "@/lib/songsai-music";
+import { AdRails } from "@/components/ad-rails";
+import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
 
 import { AssetsStudio } from "./assets-studio";
 
@@ -8,24 +10,10 @@ export const metadata: Metadata = {
   title: "My Assets | SongsAI Music PC",
 };
 
-function extractSection(markup: string, pattern: RegExp) {
-  return markup.match(pattern)?.[0] ?? "";
-}
-
 export default function AssetsPage() {
-  const template = getPageTemplate("assets");
-  const header = extractSection(
-    template.html,
-    /<!-- ##### Header Area Start ##### -->[\s\S]*?<!-- ##### Header Area End ##### -->/,
-  );
-  const footer = extractSection(
-    template.html,
-    /<!-- ##### Footer Area Start ##### -->[\s\S]*$/,
-  );
-
   return (
     <>
-      <div dangerouslySetInnerHTML={{ __html: header }} />
+      <SiteHeader />
       <section
         className="breadcumb-area bg-img bg-overlay"
         style={{ backgroundImage: "url(/songsai-music/img/bg-img/breadcumb4.jpg)" }}
@@ -35,8 +23,10 @@ export default function AssetsPage() {
           <h2>My Assets</h2>
         </div>
       </section>
-      <AssetsStudio />
-      <div dangerouslySetInnerHTML={{ __html: footer }} />
+      <AdRails>
+        <AssetsStudio />
+      </AdRails>
+      <SiteFooter />
     </>
   );
 }

@@ -1,9 +1,28 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import Script from "next/script";
 
 export function VendorScripts() {
+  const pathname = usePathname();
   const songsaiApiUrl =
     process.env.NEXT_PUBLIC_SONGSAI_API_URL?.replace(/\/$/, "") ??
     "https://api.songsai.org";
+
+  const reactManagedPrefixes = [
+    "/create",
+    "/assets",
+    "/pricing",
+    "/support",
+    "/account",
+    "/explore",
+    "/artists",
+    "/admin",
+  ];
+
+  if (pathname && reactManagedPrefixes.some((prefix) => pathname.startsWith(prefix))) {
+    return null;
+  }
 
   const uiScript = `
     (() => {
@@ -15,6 +34,21 @@ export function VendorScripts() {
         { label: "Pricing", tooltip: "구독/충전", href: "/pricing" },
         { label: "Support", tooltip: "고객지원", href: "/support" },
       ];
+      const reactManagedPrefixes = [
+        "/create",
+        "/assets",
+        "/pricing",
+        "/support",
+        "/account",
+        "/explore",
+        "/artists",
+        "/admin",
+      ];
+
+      if (reactManagedPrefixes.some((prefix) => window.location.pathname.startsWith(prefix))) {
+        return;
+      }
+
       function getApiBase() {
         return window.location.hostname === "localhost"
           ? "/api/proxy"
@@ -79,6 +113,24 @@ export function VendorScripts() {
         }
       }
 
+      function formatLikeCount(value) {
+        const count = Number.isFinite(Number(value)) ? Number(value) : 0;
+        return "좋아요 " + count;
+      }
+
+      function formatShortDate(value) {
+        if (!value) return "";
+
+        try {
+          return new Intl.DateTimeFormat("ko-KR", {
+            month: "2-digit",
+            day: "2-digit",
+          }).format(new Date(value));
+        } catch (error) {
+          return value;
+        }
+      }
+
       function getFallbackCover(index) {
         const covers = [
           "/songsai-music/img/bg-img/a1.jpg",
@@ -106,24 +158,38 @@ export function VendorScripts() {
         if (!(navList instanceof HTMLElement)) return;
 
         const currentPath = window.location.pathname.replace(/\\/$/, "") || "/";
-        navList.innerHTML = navItems
-          .map((item) => {
-            const isActive =
-              currentPath === item.href ||
-              (item.href !== "/" && currentPath.startsWith(item.href));
+        const isStudioActive = currentPath === "/create" || currentPath.startsWith("/assets");
+        const isExploreActive =
+          currentPath === "/explore" ||
+          currentPath.startsWith("/artists") ||
+          currentPath.startsWith("/explore/");
 
-            return \`
-              <li>
-                <a
-                  href="\${item.href}"
-                  class="songsai-nav-link\${isActive ? " is-active" : ""}"
-                  title="\${item.tooltip}"
-                  data-menu-tooltip="\${item.tooltip}"
-                >\${item.label}</a>
-              </li>
-            \`;
-          })
-          .join("");
+        navList.innerHTML = \`
+          <li>
+            <a href="/" class="songsai-nav-link\${currentPath === "/" ? " is-active" : ""}" title="홈">Home</a>
+          </li>
+          <li class="has-down songsai-has-down">
+            <a href="/create" class="songsai-nav-link\${isStudioActive ? " is-active" : ""}" title="제작 도구">Studio</a>
+            <ul class="dropdown songsai-nav-dropdown">
+              <li><a href="/create" class="songsai-nav-sublink">Create</a></li>
+              <li><a href="/assets" class="songsai-nav-sublink">My Assets</a></li>
+            </ul>
+          </li>
+          <li class="has-down songsai-has-down">
+            <a href="/explore" class="songsai-nav-link\${isExploreActive ? " is-active" : ""}" title="공개곡 탐색">Explore</a>
+            <ul class="dropdown songsai-nav-dropdown">
+              <li><a href="/explore" class="songsai-nav-sublink">All Songs</a></li>
+              <li><a href="/explore?sort=weekly" class="songsai-nav-sublink">Weekly</a></li>
+              <li><a href="/explore?sort=monthly" class="songsai-nav-sublink">Monthly</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="/pricing" class="songsai-nav-link\${currentPath.startsWith("/pricing") ? " is-active" : ""}" title="구독/충전">Pricing</a>
+          </li>
+          <li>
+            <a href="/support" class="songsai-nav-link\${currentPath.startsWith("/support") ? " is-active" : ""}" title="고객지원">Support</a>
+          </li>
+        \`;
       }
 
       function syncFooterNavigation() {
@@ -163,6 +229,11 @@ export function VendorScripts() {
         const container = document.querySelector(".login-register-btn");
         if (!(wrapper instanceof HTMLElement)) return;
         if (!(container instanceof HTMLElement)) return;
+
+        const cartButton = wrapper.querySelector(".cart-btn");
+        if (cartButton instanceof HTMLElement) {
+          cartButton.remove();
+        }
 
         container.innerHTML = \`
           <a href="/login" id="loginBtn" class="songsai-header-link">로그인</a>
@@ -255,6 +326,129 @@ export function VendorScripts() {
         \`;
       }
 
+      function buildWeeklyPublicItem(item, index) {
+        const title = escapeHtml(item.title || "제목 생성 중");
+        const cover = escapeHtml(item.imageUrl || getFallbackCover(index));
+        const artistName = escapeHtml(item.artistName || "SongsAI Artist");
+        const artistHref = item.artistId ? "/artists/" + encodeURIComponent(item.artistId) : "/explore?sort=weekly";
+        const previewUrl = "/api/public-preview/" + encodeURIComponent(item.id);
+        const meta = escapeHtml(artistName + " · " + formatLikeCount(item.likeCount));
+
+        return \`
+          <a class="single-top-item d-flex songsai-home-ranked-item" href="\${artistHref}">
+            <div class="thumbnail songsai-home-thumb-with-play">
+              <img src="\${cover}" alt="\${title}" loading="lazy" />
+              <button type="button" class="songsai-home-play-btn songsai-home-play-btn--overlay" data-preview-url="\${previewUrl}" aria-label="誘몃━?ｊ린">
+                <span class="icon-play-button"></span>
+              </button>
+            </div>
+            <div class="content-">
+              <h6>\${title}</h6>
+              <p>\${meta}</p>
+            </div>
+          </a>
+        \`;
+      }
+
+      function buildMonthlyPublicItem(item, index) {
+        const title = escapeHtml(item.title || "제목 생성 중");
+        const cover = escapeHtml(item.imageUrl || getFallbackCover(index));
+        const artistName = escapeHtml(item.artistName || "SongsAI Artist");
+        const previewUrl = "/api/public-preview/" + encodeURIComponent(item.id);
+        const meta = escapeHtml(artistName + " · " + formatLikeCount(item.likeCount));
+
+        return \`
+          <div class="single-new-item d-flex align-items-center justify-content-between songsai-home-public-item">
+            <div class="first-part d-flex align-items-center">
+              <div class="thumbnail">
+                <img src="\${cover}" alt="\${title}" loading="lazy" />
+              </div>
+              <div class="content-">
+                <h6>\${title}</h6>
+                <p>\${meta}</p>
+              </div>
+            </div>
+            <button type="button" class="songsai-home-play-btn" data-preview-url="\${previewUrl}" aria-label="미리듣기">
+              <span class="icon-play-button"></span>
+            </button>
+          </div>
+        \`;
+      }
+
+      function buildLatestPublicItem(item, index) {
+        const title = escapeHtml(item.title || "제목 생성 중");
+        const cover = escapeHtml(item.imageUrl || getFallbackCover(index));
+        const artistName = escapeHtml(item.artistName || "SongsAI Artist");
+        const artistHref = item.artistId ? "/artists/" + encodeURIComponent(item.artistId) : "/explore";
+        const previewUrl = "/api/public-preview/" + encodeURIComponent(item.id);
+        const meta = escapeHtml(artistName + " · " + formatShortDate(item.createdAt));
+
+        return \`
+          <a class="single-artists d-flex align-items-center songsai-home-latest-item" href="\${artistHref}">
+            <div class="thumbnail songsai-home-thumb-with-play">
+              <img src="\${cover}" alt="\${title}" loading="lazy" />
+              <button type="button" class="songsai-home-play-btn songsai-home-play-btn--overlay" data-preview-url="\${previewUrl}" aria-label="誘몃━?ｊ린">
+                <span class="icon-play-button"></span>
+              </button>
+            </div>
+            <div class="content-">
+              <h6>\${title}</h6>
+              <p>\${meta}</p>
+            </div>
+          </a>
+        \`;
+      }
+
+      function ensureHomeExploreAudio(section) {
+        let audio = section.querySelector("[data-home-explore-audio]");
+        if (audio instanceof HTMLAudioElement) return audio;
+
+        audio = document.createElement("audio");
+        audio.setAttribute("data-home-explore-audio", "true");
+        audio.className = "songsai-home-hidden-audio";
+        audio.preload = "none";
+        section.appendChild(audio);
+        return audio;
+      }
+
+      function bindHomeExplorePreview(section) {
+        const audio = ensureHomeExploreAudio(section);
+        const buttons = Array.from(section.querySelectorAll(".songsai-home-play-btn"));
+
+        buttons.forEach((button) => {
+          button.addEventListener("click", function (event) {
+            if (!(button instanceof HTMLButtonElement)) return;
+            event.preventDefault();
+            event.stopPropagation();
+            const previewUrl = button.dataset.previewUrl || "";
+            if (!previewUrl) return;
+
+            const isSameTrack = audio.dataset.currentUrl === previewUrl && !audio.paused;
+            buttons.forEach((item) => item.classList.remove("is-playing"));
+
+            if (isSameTrack) {
+              audio.pause();
+              audio.currentTime = 0;
+              audio.dataset.currentUrl = "";
+              return;
+            }
+
+            audio.src = previewUrl;
+            audio.dataset.currentUrl = previewUrl;
+            button.classList.add("is-playing");
+            void audio.play().catch((error) => {
+              console.warn("Failed to play home explore preview", error);
+              button.classList.remove("is-playing");
+            });
+          });
+        });
+
+        audio.onended = function () {
+          buttons.forEach((item) => item.classList.remove("is-playing"));
+          audio.dataset.currentUrl = "";
+        };
+      }
+
       function ensureRecentMusicPlayer(section) {
         let player = section.querySelector("[data-recent-player]");
         if (player) return player;
@@ -317,6 +511,17 @@ export function VendorScripts() {
         lyrics.textContent = previewLyrics;
         audio.src = audioUrl;
         audio.load();
+        return audio;
+      }
+
+      function playRecentMusicCard(card, player) {
+        const audio = selectRecentMusicCard(card, player);
+        if (!(audio instanceof HTMLAudioElement)) return;
+        if (!audio.src) return;
+
+        void audio.play().catch((error) => {
+          console.warn("Failed to autoplay selected recent music", error);
+        });
       }
 
       function bindRecentMusicActions(section, panel) {
@@ -326,7 +531,7 @@ export function VendorScripts() {
         cards.forEach((card) => {
           card.addEventListener("click", (event) => {
             event.preventDefault();
-            selectRecentMusicCard(card, player);
+            playRecentMusicCard(card, player);
           });
         });
 
@@ -887,6 +1092,83 @@ export function VendorScripts() {
         }
       }
 
+      async function syncHomeExplorePanels() {
+        if (window.location.pathname !== "/") return;
+
+        const section = document.querySelector(".miscellaneous-area");
+        const weeklyArea = section?.querySelector(".weeks-top-area");
+        const monthlyArea = section?.querySelector(".new-hits-area");
+        const latestArea = section?.querySelector(".popular-artists-area");
+
+        if (!(section instanceof HTMLElement)) return;
+        if (!(weeklyArea instanceof HTMLElement)) return;
+        if (!(monthlyArea instanceof HTMLElement)) return;
+        if (!(latestArea instanceof HTMLElement)) return;
+
+        try {
+          const [weeklyResponse, monthlyResponse, latestResponse] = await Promise.all([
+            fetch(getApiBase() + "/api/v1/explore?sort=weekly&limit=6&offset=0", {
+              credentials: "include",
+              headers: { Accept: "application/json" }
+            }),
+            fetch(getApiBase() + "/api/v1/explore?sort=monthly&limit=6&offset=0", {
+              credentials: "include",
+              headers: { Accept: "application/json" }
+            }),
+            fetch(getApiBase() + "/api/v1/explore?sort=latest&limit=7&offset=0", {
+              credentials: "include",
+              headers: { Accept: "application/json" }
+            }),
+          ]);
+
+          if (!weeklyResponse.ok || !monthlyResponse.ok || !latestResponse.ok) return;
+
+          const [weeklyPayload, monthlyPayload, latestPayload] = await Promise.all([
+            weeklyResponse.json(),
+            monthlyResponse.json(),
+            latestResponse.json(),
+          ]);
+
+          const weeklyItems = Array.isArray(weeklyPayload?.items) ? weeklyPayload.items : [];
+          const monthlyItems = Array.isArray(monthlyPayload?.items) ? monthlyPayload.items : [];
+          const latestItems = Array.isArray(latestPayload?.items) ? latestPayload.items : [];
+
+          if (weeklyItems.length > 0) {
+            weeklyArea.innerHTML = \`
+              <div class="section-heading text-left mb-50 wow fadeInUp" data-wow-delay="50ms">
+                <p>공개곡 Explore</p>
+                <h2>주간 좋아요 순위</h2>
+              </div>
+              \${weeklyItems.map((item, index) => buildWeeklyPublicItem(item, index)).join("")}
+            \`;
+          }
+
+          if (monthlyItems.length > 0) {
+            monthlyArea.innerHTML = \`
+              <div class="section-heading text-left mb-50 wow fadeInUp" data-wow-delay="50ms">
+                <p>공개곡 Explore</p>
+                <h2>월간 좋아요 순위</h2>
+              </div>
+              \${monthlyItems.map((item, index) => buildMonthlyPublicItem(item, index)).join("")}
+            \`;
+          }
+
+          if (latestItems.length > 0) {
+            latestArea.innerHTML = \`
+              <div class="section-heading text-left mb-50 wow fadeInUp" data-wow-delay="50ms">
+                <p>공개곡 Explore</p>
+                <h2>최신 공개곡</h2>
+              </div>
+              \${latestItems.map((item, index) => buildLatestPublicItem(item, index)).join("")}
+            \`;
+          }
+
+          bindHomeExplorePreview(section);
+        } catch (error) {
+          console.warn("Failed to sync home explore panels", error);
+        }
+      }
+
       function bootUiEnhancements() {
         syncTopNavigation();
         syncFooterNavigation();
@@ -894,6 +1176,7 @@ export function VendorScripts() {
         syncHeroCtas();
         syncHeaderAuth();
         syncRecentMusicPanel();
+        syncHomeExplorePanels();
         syncAssetsPage();
         window.setTimeout(syncFooterNavigation, 50);
         window.setTimeout(syncFooterNavigation, 300);

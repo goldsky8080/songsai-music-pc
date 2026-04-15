@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
+
 import {
   getKnownRoutes,
   getPageTemplate,
@@ -38,6 +41,12 @@ export async function generateMetadata({
   };
 }
 
+function stripTemplateChrome(html: string) {
+  return html
+    .replace(/<header class="header-area">[\s\S]*?<\/header>/i, "")
+    .replace(/<footer class="footer-area">[\s\S]*?<\/footer>/i, "");
+}
+
 export default async function CatchAllPage({ params }: PageProps) {
   const { slug } = await params;
   const routeKey = resolveRouteKey(slug);
@@ -47,6 +56,11 @@ export default async function CatchAllPage({ params }: PageProps) {
   }
 
   const page = getPageTemplate(routeKey);
-
-  return <main dangerouslySetInnerHTML={{ __html: page.html }} />;
+  return (
+    <>
+      <SiteHeader />
+      <main dangerouslySetInnerHTML={{ __html: stripTemplateChrome(page.html) }} />
+      <SiteFooter />
+    </>
+  );
 }

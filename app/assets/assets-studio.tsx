@@ -29,6 +29,8 @@ type MusicItem = {
   downloadAvailableAt?: string | null;
   videoId?: string | null;
   videoStatus?: string | null;
+  isPublic?: boolean;
+  likeCount?: number;
 };
 
 type MusicPagination = {
@@ -43,6 +45,12 @@ type VideoResponse = {
     id: string;
     status: string;
     mp4Url?: string | null;
+  };
+};
+type VisibilityResponse = {
+  item: {
+    id: string;
+    isPublic: boolean;
   };
 };
 
@@ -197,6 +205,7 @@ export function AssetsStudio() {
   const [playingItemId, setPlayingItemId] = useState<string | null>(null);
   const [playingUrl, setPlayingUrl] = useState<string | null>(null);
   const [isCreatingVideoId, setIsCreatingVideoId] = useState<string | null>(null);
+  const [isUpdatingVisibilityId, setIsUpdatingVisibilityId] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [nextOffset, setNextOffset] = useState(0);
@@ -363,6 +372,48 @@ export function AssetsStudio() {
     }
   }
 
+  async function handleVisibilityToggle(item: MusicItem) {
+    setIsUpdatingVisibilityId(item.id);
+    setError(null);
+    setMessage(null);
+
+    try {
+      const response = await songsaiApiRequest<VisibilityResponse>(`/api/v1/music/${item.id}/visibility`, {
+        method: "PATCH",
+        body: JSON.stringify({ isPublic: !item.isPublic }),
+      });
+
+      setItems((current) =>
+        current.map((currentItem) =>
+          currentItem.id === item.id
+            ? {
+                ...currentItem,
+                isPublic: response.item.isPublic,
+              }
+            : currentItem,
+        ),
+      );
+      setMessage(
+        response.item.isPublic
+          ? "이 곡이 Explore에 공개되도록 변경했습니다."
+          : "이 곡을 private로 전환해 Explore에서 숨겼습니다.",
+      );
+    } catch (requestError) {
+      if (requestError instanceof SongsaiApiError && requestError.status === 404) {
+        setError("공개 상태 변경 API가 아직 연결되지 않았습니다. songsai-api에 visibility 엔드포인트를 먼저 추가해 주세요.");
+        return;
+      }
+
+      setError(
+        requestError instanceof SongsaiApiError
+          ? requestError.message
+          : "공개 상태를 변경하지 못했습니다.",
+      );
+    } finally {
+      setIsUpdatingVisibilityId(null);
+    }
+  }
+
   useEffect(() => {
     if (isCheckingSession || !user || !hasMore || isLoadingMore) {
       return;
@@ -470,7 +521,25 @@ export function AssetsStudio() {
                               </span>
                             </button>
                           ) : null}
-                          <span className={getStatusClassName(activeItem.status)}>{formatStatusLabel(activeItem.status)}</span>
+                          <div className={styles.mediaBadges}>
+                            <span className={getStatusClassName(activeItem.status)}>{formatStatusLabel(activeItem.status)}</span>
+                            <button
+                              type="button"
+                              className={
+                                activeItem.isPublic === false
+                                  ? styles.mediaTogglePrivate
+                                  : styles.mediaTogglePublic
+                              }
+                              disabled={isUpdatingVisibilityId === activeItem.id}
+                              onClick={() => void handleVisibilityToggle(activeItem)}
+                            >
+                              {isUpdatingVisibilityId === activeItem.id
+                                ? "변경 중"
+                                : activeItem.isPublic === false
+                                  ? "Private"
+                                  : "Public"}
+                            </button>
+                          </div>
                           {group.items.length > 1 ? (
                             <div className={styles.slideControls}>
                               <button
@@ -508,6 +577,22 @@ export function AssetsStudio() {
                               ? activeItem.errorMessage
                               : compactText(activeItem.stylePrompt || activeItem.tags || activeItem.lyrics)}
                           </p>
+                          <div className={styles.visibilityRow}>
+                            <span
+                              className={
+                                activeItem.isPublic === false
+                                  ? styles.visibilityChipPrivate
+                                  : styles.visibilityChipPublic
+                              }
+                            >
+                              {activeItem.isPublic === false ? "Private" : "Public"}
+                            </span>
+                            <span className={styles.visibilityMeta}>
+                              {activeItem.isPublic === false
+                                ? "Explore와 Artist 페이지에서 숨김"
+                                : "Explore와 Artist 페이지에 노출"}
+                            </span>
+                          </div>
 
                           {activeItem.mp3Url || activeItem.providerTaskId ? (
                             <p className={styles.previewHint}>
@@ -518,6 +603,18 @@ export function AssetsStudio() {
                           )}
 
                           <div className={styles.assetRow}>
+                            <button
+                              type="button"
+                              className={styles.assetButtonSecondary}
+                              disabled={isUpdatingVisibilityId === activeItem.id}
+                              onClick={() => void handleVisibilityToggle(activeItem)}
+                            >
+                              {isUpdatingVisibilityId === activeItem.id
+                                ? "공개 상태 변경 중.."
+                                : activeItem.isPublic === false
+                                  ? "Make Public"
+                                  : "Make Private"}
+                            </button>
                             <a
                               href={ready ? buildDownloadUrl(activeItem) : undefined}
                               className={ready ? styles.assetButton : styles.assetButtonDisabled}

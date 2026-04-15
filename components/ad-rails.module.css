@@ -1,0 +1,73 @@
+.shell {
+  position: relative;
+  width: min(100%, 1840px);
+  margin: 0 auto;
+  --rail-top: 180px;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+}
+
+.rail {
+  position: fixed;
+  top: var(--rail-top);
+  z-index: 20;
+  width: 160px;
+}
+
+.leftRail {
+  left: max(20px, calc(50% - 900px));
+}
+
+.rightRail {
+  right: max(20px, calc(50% - 900px));
+}
+
+.slot {
+  min-height: 360px;
+  border: 1px dashed rgba(17, 24, 39, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(248, 250, 252, 0.82));
+  backdrop-filter: blur(8px);
+  box-shadow: 0 20px 44px rgba(15, 23, 42, 0.08);
+  padding: 18px 16px;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  color: #475569;
+}
+
+.slotLabel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.08);
+  color: #111827;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.slot strong {
+  color: #111827;
+  font-size: 18px;
+}
+
+.slot p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+@media (max-width: 1599px) {
+  .rail {
+    display: none;
+  }
+}

@@ -4,13 +4,13 @@ import { AdRails } from "@/components/ad-rails";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
-import { CreateStudio } from "./create-studio";
+import { PricingStudio } from "./pricing-studio";
 
 export const metadata: Metadata = {
-  title: "Create | SongsAI Music PC",
+  title: "Pricing | SongsAI Music PC",
 };
 
-export default function CreatePage() {
+export default function PricingPage() {
   return (
     <>
       <SiteHeader />
@@ -19,12 +19,12 @@ export default function CreatePage() {
         style={{ backgroundImage: "url(/songsai-music/img/bg-img/breadcumb3.jpg)" }}
       >
         <div className="bradcumbContent">
-          <p>Shape your next track</p>
-          <h2>Create</h2>
+          <p>SongsAI Music의 현재 사용 방식과 운영 흐름을 한눈에 정리했습니다</p>
+          <h2>Pricing</h2>
         </div>
       </section>
-      <AdRails railTop={760}>
-        <CreateStudio />
+      <AdRails>
+        <PricingStudio />
       </AdRails>
       <SiteFooter />
     </>

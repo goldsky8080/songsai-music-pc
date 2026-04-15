@@ -6,10 +6,10 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import type { PublicUser } from "@/lib/songsai-api";
 
-import { MembersStudio } from "./members-studio";
+import { AccountStudio } from "./account-studio";
 
 export const metadata: Metadata = {
-  title: "Members | SongsAI Music PC",
+  title: "Account | SongsAI Music PC",
 };
 
 function getBackendBaseUrl() {
@@ -30,9 +30,7 @@ async function getCurrentUser() {
   try {
     const response = await fetch(`${getBackendBaseUrl()}/api/v1/me`, {
       method: "GET",
-      headers: {
-        cookie: cookieHeader,
-      },
+      headers: { cookie: cookieHeader },
       cache: "no-store",
     });
 
@@ -47,15 +45,11 @@ async function getCurrentUser() {
   }
 }
 
-export default async function MembersPage() {
+export default async function AccountPage() {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login?next=/admin/members");
-  }
-
-  if (user.role !== "ADMIN") {
-    redirect("/");
+    redirect("/login?next=/account");
   }
 
   return (
@@ -63,14 +57,14 @@ export default async function MembersPage() {
       <SiteHeader />
       <section
         className="breadcumb-area bg-img bg-overlay"
-        style={{ backgroundImage: "url(/songsai-music/img/bg-img/breadcumb3.jpg)" }}
+        style={{ backgroundImage: "url(/songsai-music/img/bg-img/breadcumb4.jpg)" }}
       >
         <div className="bradcumbContent">
-          <p>Manage verified members and signups</p>
-          <h2>Members</h2>
+          <p>계정 정보와 보안 상태를 한 화면에서 정리합니다</p>
+          <h2>Account</h2>
         </div>
       </section>
-      <MembersStudio />
+      <AccountStudio initialUser={user} />
       <SiteFooter />
     </>
   );

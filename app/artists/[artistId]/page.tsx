@@ -4,27 +4,33 @@ import { AdRails } from "@/components/ad-rails";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
-import { CreateStudio } from "./create-studio";
+import { ArtistStudio } from "./artist-studio";
 
 export const metadata: Metadata = {
-  title: "Create | SongsAI Music PC",
+  title: "Artist | SongsAI Music PC",
 };
 
-export default function CreatePage() {
+export default async function ArtistPage({
+  params,
+}: {
+  params: Promise<{ artistId: string }>;
+}) {
+  const { artistId } = await params;
+
   return (
     <>
       <SiteHeader />
       <section
         className="breadcumb-area bg-img bg-overlay"
-        style={{ backgroundImage: "url(/songsai-music/img/bg-img/breadcumb3.jpg)" }}
+        style={{ backgroundImage: "url(/songsai-music/img/bg-img/breadcumb2.jpg)" }}
       >
         <div className="bradcumbContent">
-          <p>Shape your next track</p>
-          <h2>Create</h2>
+          <p>Public songs by artist</p>
+          <h2>Artist</h2>
         </div>
       </section>
-      <AdRails railTop={760}>
-        <CreateStudio />
+      <AdRails railTop={560}>
+        <ArtistStudio artistId={artistId} />
       </AdRails>
       <SiteFooter />
     </>

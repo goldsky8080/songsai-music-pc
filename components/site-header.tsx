@@ -1,0 +1,154 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+
+import { type PublicUser, SongsaiApiError, songsaiApiRequest } from "@/lib/songsai-api";
+
+import styles from "./site-shell.module.css";
+
+const navItems = [
+  { href: "/", label: "Home" },
+  {
+    href: "/create",
+    label: "Studio",
+    children: [
+      { href: "/create", label: "Create" },
+      { href: "/assets", label: "My Assets" },
+    ],
+  },
+  {
+    href: "/explore",
+    label: "Explore",
+    children: [
+      { href: "/explore", label: "All Songs" },
+      { href: "/explore?sort=weekly", label: "Weekly" },
+      { href: "/explore?sort=monthly", label: "Monthly" },
+    ],
+  },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/support", label: "Support" },
+] as const;
+
+function isActive(pathname: string, href: string) {
+  if (href === "/") {
+    return pathname === "/";
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+export function SiteHeader() {
+  const pathname = usePathname();
+  const [user, setUser] = useState<PublicUser | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSession() {
+      try {
+        const response = await songsaiApiRequest<{ user: PublicUser }>("/api/v1/me", {
+          method: "GET",
+        });
+
+        if (!cancelled) {
+          setUser(response.user);
+        }
+      } catch (error) {
+        if (!cancelled && error instanceof SongsaiApiError && error.status === 401) {
+          setUser(null);
+        }
+      }
+    }
+
+    void loadSession();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [pathname]);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  const authLabel = useMemo(() => user?.name || user?.email || "계정", [user]);
+
+  async function handleLogout() {
+    try {
+      await songsaiApiRequest("/api/v1/auth/logout", { method: "POST" });
+      window.location.assign("/");
+    } catch {
+      window.alert("로그아웃에 실패했습니다.");
+    }
+  }
+
+  return (
+    <header className={styles.header}>
+      <div className={styles.headerInner}>
+        <a href="/" className={styles.brand}>
+          SONGSAI-MUSIC
+        </a>
+
+        <button
+          type="button"
+          className={styles.mobileMenuButton}
+          aria-label={menuOpen ? "메뉴 닫기" : "메뉴 열기"}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((current) => !current)}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+
+        <div className={`${styles.menuArea} ${menuOpen ? styles.menuAreaOpen : ""}`}>
+          <nav className={styles.nav}>
+            {navItems.map((item) => (
+              <div key={item.href} className={styles.navItem}>
+                <a
+                  href={item.href}
+                  className={`${styles.navLink} ${isActive(pathname, item.href) ? styles.navLinkActive : ""}`}
+                >
+                  {item.label}
+                </a>
+                {"children" in item ? (
+                  <div className={styles.submenu}>
+                    {item.children.map((child) => (
+                      <a key={child.href} href={child.href} className={styles.submenuLink}>
+                        {child.label}
+                      </a>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            ))}
+          </nav>
+
+          <div className={styles.actions}>
+            <a href="/create" className={styles.createButton}>
+              Create
+            </a>
+            <div className={styles.auth}>
+              {user ? (
+                <>
+                  <a href="/account" className={styles.authLink}>
+                    {authLabel}
+                  </a>
+                  <button type="button" className={styles.logoutButton} onClick={handleLogout}>
+                    로그아웃
+                  </button>
+                </>
+              ) : (
+                <a href={`/login?next=${encodeURIComponent(pathname || "/")}`} className={styles.authLink}>
+                  로그인
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}

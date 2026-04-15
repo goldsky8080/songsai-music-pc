@@ -23,3 +23,88 @@ a {
     visibility: hidden;
   }
 }
+
+.songsai-home-ranked-item,
+.songsai-home-latest-item {
+  text-decoration: none;
+}
+
+.songsai-home-ranked-item .content- p,
+.songsai-home-public-item .content- p,
+.songsai-home-latest-item .content- p {
+  margin: 0;
+}
+
+.songsai-home-latest-item .content- h6 {
+  margin: 0 0 6px;
+  color: #101010;
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.songsai-home-play-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  border: 0;
+  border-radius: 999px;
+  background: #d7d7d7;
+  color: #fff;
+  font-size: 18px;
+  flex: 0 0 auto;
+}
+
+.songsai-home-thumb-with-play {
+  position: relative;
+}
+
+.songsai-home-play-btn--overlay {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 44px;
+  height: 44px;
+  font-size: 14px;
+  background: rgba(18, 18, 18, 0.78);
+}
+
+.songsai-home-play-btn.is-playing {
+  background: #b64822;
+}
+
+.songsai-home-play-btn .icon-play-button {
+  margin-left: 3px;
+}
+
+.songsai-home-hidden-audio {
+  display: none;
+}
+
+.classy-navbar .nav-brand.nav-brand-text {
+  color: #ffffff;
+  transition: color 0.18s ease;
+}
+
+.classy-navbar .nav-brand.nav-brand-text:hover,
+.classy-navbar .nav-brand.nav-brand-text:focus {
+  color: #fff3ea;
+}
+
+.songsai-nav-link,
+.songsai-nav-sublink {
+  transition: color 0.18s ease, background-color 0.18s ease;
+}
+
+.songsai-nav-link:hover,
+.songsai-nav-link:focus,
+.songsai-nav-sublink:hover,
+.songsai-nav-sublink:focus {
+  color: #fff3ea !important;
+}
+
+.songsai-nav-dropdown .songsai-nav-sublink:hover,
+.songsai-nav-dropdown .songsai-nav-sublink:focus {
+  background: rgba(255, 255, 255, 0.12);
+}

@@ -4,27 +4,27 @@ import { AdRails } from "@/components/ad-rails";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
-import { CreateStudio } from "./create-studio";
+import { ExploreStudio } from "./explore-studio";
 
 export const metadata: Metadata = {
-  title: "Create | SongsAI Music PC",
+  title: "Explore | SongsAI Music PC",
 };
 
-export default function CreatePage() {
+export default function ExplorePage() {
   return (
     <>
       <SiteHeader />
       <section
         className="breadcumb-area bg-img bg-overlay"
-        style={{ backgroundImage: "url(/songsai-music/img/bg-img/breadcumb3.jpg)" }}
+        style={{ backgroundImage: "url(/songsai-music/img/bg-img/breadcumb2.jpg)" }}
       >
         <div className="bradcumbContent">
-          <p>Shape your next track</p>
-          <h2>Create</h2>
+          <p>Public songs, rankings, and artists</p>
+          <h2>Explore</h2>
         </div>
       </section>
-      <AdRails railTop={760}>
-        <CreateStudio />
+      <AdRails railTop={560}>
+        <ExploreStudio />
       </AdRails>
       <SiteFooter />
     </>

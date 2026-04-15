@@ -6,10 +6,10 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import type { PublicUser } from "@/lib/songsai-api";
 
-import { MembersStudio } from "./members-studio";
+import { InboxStudio } from "./inbox-studio";
 
 export const metadata: Metadata = {
-  title: "Members | SongsAI Music PC",
+  title: "Inbox | SongsAI Music PC",
 };
 
 function getBackendBaseUrl() {
@@ -47,11 +47,11 @@ async function getCurrentUser() {
   }
 }
 
-export default async function MembersPage() {
+export default async function InboxPage() {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login?next=/admin/members");
+    redirect("/login?next=/admin/inbox");
   }
 
   if (user.role !== "ADMIN") {
@@ -66,11 +66,11 @@ export default async function MembersPage() {
         style={{ backgroundImage: "url(/songsai-music/img/bg-img/breadcumb3.jpg)" }}
       >
         <div className="bradcumbContent">
-          <p>Manage verified members and signups</p>
-          <h2>Members</h2>
+          <p>Manage support inbox and inbound messages</p>
+          <h2>Inbox</h2>
         </div>
       </section>
-      <MembersStudio />
+      <InboxStudio />
       <SiteFooter />
     </>
   );

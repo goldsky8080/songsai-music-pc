@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { AdminNav } from "@/app/admin/admin-nav";
 import { type PublicUser, SongsaiApiError, songsaiApiRequest } from "@/lib/songsai-api";
 
 import styles from "./members-studio.module.css";
@@ -58,10 +59,11 @@ export function MembersStudio() {
           }
 
           if (requestError.status === 403) {
-            setError("관리자 또는 개발자 계정만 이 화면에 접근할 수 있습니다.");
-          } else {
-            setError(requestError.message);
+            window.location.assign("/");
+            return;
           }
+
+          setError(requestError.message);
         } else {
           setError("회원 목록을 불러오지 못했습니다.");
         }
@@ -81,6 +83,7 @@ export function MembersStudio() {
 
   return (
     <section className={styles.section}>
+      <AdminNav />
       <div className={styles.header}>
         <div>
           <p className={styles.eyebrow}>Admin View</p>
@@ -102,7 +105,7 @@ export function MembersStudio() {
               <tr>
                 <th>이름</th>
                 <th>이메일</th>
-                <th>역할</th>
+                <th>권한</th>
                 <th>인증</th>
                 <th>가입일</th>
               </tr>

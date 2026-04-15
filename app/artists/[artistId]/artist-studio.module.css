@@ -1,0 +1,218 @@
+.section {
+  width: min(1080px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 88px 0 0;
+  display: grid;
+  gap: 28px;
+}
+
+.heroCard {
+  padding: 36px 40px;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    linear-gradient(180deg, rgba(10, 14, 27, 0.92), rgba(10, 14, 27, 0.86)),
+    url("/songsai-music/img/bg-img/bg-4.jpg") center/cover no-repeat;
+  color: #ffffff;
+  box-shadow: 0 24px 60px rgba(5, 10, 22, 0.22);
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(255, 228, 241, 0.8);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(34px, 5vw, 46px);
+  line-height: 1.12;
+  font-weight: 800;
+}
+
+.description {
+  margin: 18px 0 0;
+  font-size: 16px;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.metaRow {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.heroChip,
+.heroLink {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.card {
+  overflow: hidden;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(8, 11, 21, 0.96), rgba(12, 17, 29, 0.94));
+  box-shadow: 0 18px 44px rgba(5, 10, 22, 0.18);
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 1 / 1;
+}
+
+.cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.playButton {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  width: 112px;
+  height: 112px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.82);
+  background: rgba(8, 11, 21, 0.36);
+  color: #ffffff;
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+}
+
+.playButton span {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.cardBody {
+  display: grid;
+  gap: 16px;
+  padding: 22px 22px 24px;
+}
+
+.cardHeader {
+  display: grid;
+  gap: 10px;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.18;
+  color: #ffffff;
+}
+
+.dateText {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.cardDescription {
+  margin: 0;
+  min-height: 46px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.likeButton,
+.likeButtonActive {
+  min-width: 120px;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.likeButton {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.likeButtonActive {
+  border: 1px solid rgba(246, 205, 226, 0.52);
+  background: linear-gradient(90deg, rgba(247, 215, 231, 0.96), rgba(252, 239, 248, 0.9));
+  color: #111827;
+}
+
+.listenLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.54);
+}
+
+.error,
+.empty {
+  border-radius: 18px;
+  padding: 18px 20px;
+  font-size: 15px;
+  text-align: center;
+}
+
+.error {
+  color: #8f1d32;
+  background: rgba(255, 229, 234, 0.88);
+}
+
+.empty {
+  color: #374151;
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.hiddenAudio {
+  display: none;
+}
+
+@media (max-width: 1199px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .section {
+    width: min(100% - 24px, 1080px);
+    padding-top: 56px;
+  }
+
+  .heroCard {
+    padding: 24px 20px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardTitle {
+    font-size: 22px;
+  }
+}
