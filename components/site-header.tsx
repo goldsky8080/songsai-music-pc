@@ -1,6 +1,4 @@
 "use client";
-
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -115,9 +113,9 @@ export function SiteHeader() {
   return (
     <header className={styles.header}>
       <div className={styles.headerInner}>
-        <Link href="/" className={styles.brand}>
+        <a href="/" className={styles.brand}>
           SONGSAI-MUSIC
-        </Link>
+        </a>
 
         <button
           type="button"
@@ -135,23 +133,23 @@ export function SiteHeader() {
           <nav className={styles.nav}>
             {navItems.map((item) => (
               <div key={item.href} className={styles.navItem}>
-                <Link
+                <a
                   href={item.href}
                   className={`${styles.navLink} ${isActive(pathname, item.href) ? styles.navLinkActive : ""}`}
                 >
                   {item.label}
-                </Link>
+                </a>
                 {item.children?.length ? (
                   <div className={styles.submenu}>
                     {item.children.map((child) => (
                       child.href ? (
-                        <Link
+                        <a
                           key={`${item.href}-${child.href}`}
                           href={child.href}
                           className={`${styles.submenuLink} ${isActive(pathname, child.href) ? styles.submenuLinkActive : ""}`}
                         >
                           {child.label}
-                        </Link>
+                        </a>
                       ) : (
                         <button
                           key={`${item.href}-${child.label}`}
@@ -170,9 +168,9 @@ export function SiteHeader() {
           </nav>
 
           <div className={styles.actions}>
-            <Link href="/create" className={styles.createButton}>
+            <a href="/create" className={styles.createButton}>
               Create
-            </Link>
+            </a>
 
             {user ? (
               <div className={`${styles.navItem} ${styles.userMenuItem}`}>
@@ -180,32 +178,32 @@ export function SiteHeader() {
                   {authLabel}
                 </button>
                 <div className={`${styles.submenu} ${styles.userSubmenu}`}>
-                  <Link
+                  <a
                     href="/account"
                     className={`${styles.submenuLink} ${isActive(pathname, "/account") ? styles.submenuLinkActive : ""}`}
                   >
                     Account
-                  </Link>
-                  <Link
+                  </a>
+                  <a
                     href="/assets"
                     className={`${styles.submenuLink} ${isActive(pathname, "/assets") ? styles.submenuLinkActive : ""}`}
                   >
                     My Assets
-                  </Link>
+                  </a>
                   {isAdmin ? (
                     <>
-                      <Link
+                      <a
                         href="/admin/inbox"
                         className={`${styles.submenuLink} ${isActive(pathname, "/admin/inbox") ? styles.submenuLinkActive : ""}`}
                       >
                         Admin Inbox
-                      </Link>
-                      <Link
+                      </a>
+                      <a
                         href="/admin/members"
                         className={`${styles.submenuLink} ${isActive(pathname, "/admin/members") ? styles.submenuLinkActive : ""}`}
                       >
                         Admin Members
-                      </Link>
+                      </a>
                     </>
                   ) : null}
                   <button type="button" className={`${styles.submenuLink} ${styles.submenuButton}`} onClick={handleLogout}>
@@ -215,9 +213,9 @@ export function SiteHeader() {
               </div>
             ) : (
               <div className={styles.auth}>
-                <Link href={`/login?next=${encodeURIComponent(pathname || "/")}`} className={styles.authLink}>
+                <a href={`/login?next=${encodeURIComponent(pathname || "/")}`} className={styles.authLink}>
                   로그인
-                </Link>
+                </a>
               </div>
             )}
           </div>
