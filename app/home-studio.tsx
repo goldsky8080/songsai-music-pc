@@ -440,7 +440,7 @@ export function HomeStudio() {
                   <h2>주간 좋아요 순위</h2>
                 </div>
                 {publicSongs.weekly.length > 0 ? publicSongs.weekly.map((item) => (
-                  <Link key={item.id} className="single-top-item d-flex songsai-home-ranked-item" href={buildArtistHref(item, "/explore?sort=weekly")}>
+                  <a key={item.id} className="single-top-item d-flex songsai-home-ranked-item" href={buildArtistHref(item, "/explore?sort=weekly")}>
                     <div className="thumbnail songsai-home-thumb-with-play">
                       <img src={item.imageUrl || "/songsai-music/img/bg-img/wt1.jpg"} alt={item.title || "주간 공개곡"} />
                       <button
@@ -459,7 +459,7 @@ export function HomeStudio() {
                       <h6 className={styles.chartItemTitle}>{truncateChartTitle(item.title)}</h6>
                       <span className={styles.artistLinkLabel}>아티스트 보기</span>
                     </div>
-                  </Link>
+                  </a>
                 )) : <p className={styles.emptyListMessage}>{emptyPublicMessages.weekly}</p>}
               </div>
             </div>
@@ -471,7 +471,7 @@ export function HomeStudio() {
                   <h2>월간 좋아요 순위</h2>
                 </div>
                 {publicSongs.monthly.length > 0 ? publicSongs.monthly.map((item) => (
-                  <Link
+                  <a
                     key={item.id}
                     href={buildArtistHref(item, "/explore?sort=monthly")}
                     className="single-new-item d-flex align-items-center justify-content-between songsai-home-public-item"
@@ -496,7 +496,7 @@ export function HomeStudio() {
                         <span className={styles.artistLinkLabel}>아티스트 보기</span>
                       </div>
                     </div>
-                  </Link>
+                  </a>
                 )) : <p className={styles.emptyListMessage}>{emptyPublicMessages.monthly}</p>}
               </div>
             </div>
@@ -508,7 +508,7 @@ export function HomeStudio() {
                   <h2>최신 공개곡</h2>
                 </div>
                 {publicSongs.latest.length > 0 ? publicSongs.latest.map((item) => (
-                  <Link key={item.id} className="single-artists d-flex align-items-center songsai-home-latest-item" href={buildArtistHref(item, "/explore")}>
+                  <a key={item.id} className="single-artists d-flex align-items-center songsai-home-latest-item" href={buildArtistHref(item, "/explore")}>
                     <div className="thumbnail songsai-home-thumb-with-play">
                       <img src={item.imageUrl || "/songsai-music/img/bg-img/pa1.jpg"} alt={item.title || "최신 공개곡"} />
                       <button
@@ -527,7 +527,7 @@ export function HomeStudio() {
                       <h6 className={styles.chartItemTitle}>{truncateChartTitle(item.title)}</h6>
                       <span className={styles.artistLinkLabel}>아티스트 보기</span>
                     </div>
-                  </Link>
+                  </a>
                 )) : <p className={styles.emptyListMessage}>{emptyPublicMessages.latest}</p>}
               </div>
             </div>
