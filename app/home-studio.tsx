@@ -328,6 +328,104 @@ export function HomeStudio() {
         </div>
       </section>
 
+      <section className="miscellaneous-area section-padding-100-0">
+        <div className="container">
+          <div className="row">
+            <div className="col-12 col-lg-4">
+              <div className="weeks-top-area mb-100">
+                <div className="section-heading text-left mb-50">
+                  <p>공개곡 Explore</p>
+                  <h2>주간 좋아요 순위</h2>
+                </div>
+                {publicSongs.weekly.length > 0 ? publicSongs.weekly.map((item) => (
+                  <a key={item.id} className="single-top-item d-flex songsai-home-ranked-item" href={buildArtistHref(item, "/explore?sort=weekly")}>
+                    <div className="thumbnail songsai-home-thumb-with-play">
+                      <img src={item.imageUrl || "/songsai-music/img/bg-img/wt1.jpg"} alt={item.title || "주간 공개곡"} />
+                      <button
+                        type="button"
+                        className={`songsai-home-play-btn songsai-home-play-btn--overlay ${previewPlayingId === `weekly-${item.id}` ? "is-playing" : ""}`}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          handleTogglePreview(item, `weekly-${item.id}`);
+                        }}
+                        aria-label="미리듣기"
+                      >
+                        <span className="icon-play-button" />
+                      </button>
+                    </div>
+                    <div className="content-">
+                      <h6>{item.title || "제목 생성 중"}</h6>
+                      <p>{`${item.artistName || "SongsAI Artist"} · 좋아요 ${item.likeCount ?? 0}`}</p>
+                    </div>
+                  </a>
+                )) : <p className={styles.emptyListMessage}>{emptyPublicMessages.weekly}</p>}
+              </div>
+            </div>
+
+            <div className="col-12 col-lg-4">
+              <div className="new-hits-area mb-100">
+                <div className="section-heading text-left mb-50">
+                  <p>공개곡 Explore</p>
+                  <h2>월간 좋아요 순위</h2>
+                </div>
+                {publicSongs.monthly.length > 0 ? publicSongs.monthly.map((item) => (
+                  <div key={item.id} className="single-new-item d-flex align-items-center justify-content-between songsai-home-public-item">
+                    <div className="first-part d-flex align-items-center">
+                      <div className="thumbnail">
+                        <img src={item.imageUrl || "/songsai-music/img/bg-img/wt7.jpg"} alt={item.title || "월간 공개곡"} />
+                      </div>
+                      <div className="content-">
+                        <h6>{item.title || "제목 생성 중"}</h6>
+                        <p>{`${item.artistName || "SongsAI Artist"} · 좋아요 ${item.likeCount ?? 0}`}</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className={`songsai-home-play-btn ${previewPlayingId === `monthly-${item.id}` ? "is-playing" : ""}`}
+                      onClick={() => handleTogglePreview(item, `monthly-${item.id}`)}
+                      aria-label="미리듣기"
+                    >
+                      <span className="icon-play-button" />
+                    </button>
+                  </div>
+                )) : <p className={styles.emptyListMessage}>{emptyPublicMessages.monthly}</p>}
+              </div>
+            </div>
+
+            <div className="col-12 col-lg-4">
+              <div className="popular-artists-area mb-100">
+                <div className="section-heading text-left mb-50">
+                  <p>공개곡 Explore</p>
+                  <h2>최신 공개곡</h2>
+                </div>
+                {publicSongs.latest.length > 0 ? publicSongs.latest.map((item) => (
+                  <a key={item.id} className="single-artists d-flex align-items-center songsai-home-latest-item" href={buildArtistHref(item, "/explore")}>
+                    <div className="thumbnail songsai-home-thumb-with-play">
+                      <img src={item.imageUrl || "/songsai-music/img/bg-img/pa1.jpg"} alt={item.title || "최신 공개곡"} />
+                      <button
+                        type="button"
+                        className={`songsai-home-play-btn songsai-home-play-btn--overlay ${previewPlayingId === `latest-${item.id}` ? "is-playing" : ""}`}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          handleTogglePreview(item, `latest-${item.id}`);
+                        }}
+                        aria-label="미리듣기"
+                      >
+                        <span className="icon-play-button" />
+                      </button>
+                    </div>
+                    <div className="content-">
+                      <h6>{item.title || "제목 생성 중"}</h6>
+                      <p>{`${item.artistName || "SongsAI Artist"} · ${formatShortDate(item.createdAt)}`}</p>
+                    </div>
+                  </a>
+                )) : <p className={styles.emptyListMessage}>{emptyPublicMessages.latest}</p>}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="latest-albums-area section-padding-100">
         <div className="container">
           <div className="row">
@@ -486,104 +584,6 @@ export function HomeStudio() {
                   </div>
                   {selectedTrack ? <audio controls preload="none" src={buildRecentAudioUrl(selectedTrack)} /> : null}
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="miscellaneous-area section-padding-100-0">
-        <div className="container">
-          <div className="row">
-            <div className="col-12 col-lg-4">
-              <div className="weeks-top-area mb-100">
-                <div className="section-heading text-left mb-50">
-                  <p>공개곡 Explore</p>
-                  <h2>주간 좋아요 순위</h2>
-                </div>
-                {publicSongs.weekly.length > 0 ? publicSongs.weekly.map((item) => (
-                  <a key={item.id} className="single-top-item d-flex songsai-home-ranked-item" href={buildArtistHref(item, "/explore?sort=weekly")}>
-                    <div className="thumbnail songsai-home-thumb-with-play">
-                      <img src={item.imageUrl || "/songsai-music/img/bg-img/wt1.jpg"} alt={item.title || "주간 공개곡"} />
-                      <button
-                        type="button"
-                        className={`songsai-home-play-btn songsai-home-play-btn--overlay ${previewPlayingId === `weekly-${item.id}` ? "is-playing" : ""}`}
-                        onClick={(event) => {
-                          event.preventDefault();
-                          handleTogglePreview(item, `weekly-${item.id}`);
-                        }}
-                        aria-label="미리듣기"
-                      >
-                        <span className="icon-play-button" />
-                      </button>
-                    </div>
-                    <div className="content-">
-                      <h6>{item.title || "제목 생성 중"}</h6>
-                      <p>{`${item.artistName || "SongsAI Artist"} · 좋아요 ${item.likeCount ?? 0}`}</p>
-                    </div>
-                  </a>
-                )) : <p className={styles.emptyListMessage}>{emptyPublicMessages.weekly}</p>}
-              </div>
-            </div>
-
-            <div className="col-12 col-lg-4">
-              <div className="new-hits-area mb-100">
-                <div className="section-heading text-left mb-50">
-                  <p>공개곡 Explore</p>
-                  <h2>월간 좋아요 순위</h2>
-                </div>
-                {publicSongs.monthly.length > 0 ? publicSongs.monthly.map((item) => (
-                  <div key={item.id} className="single-new-item d-flex align-items-center justify-content-between songsai-home-public-item">
-                    <div className="first-part d-flex align-items-center">
-                      <div className="thumbnail">
-                        <img src={item.imageUrl || "/songsai-music/img/bg-img/wt7.jpg"} alt={item.title || "월간 공개곡"} />
-                      </div>
-                      <div className="content-">
-                        <h6>{item.title || "제목 생성 중"}</h6>
-                        <p>{`${item.artistName || "SongsAI Artist"} · 좋아요 ${item.likeCount ?? 0}`}</p>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      className={`songsai-home-play-btn ${previewPlayingId === `monthly-${item.id}` ? "is-playing" : ""}`}
-                      onClick={() => handleTogglePreview(item, `monthly-${item.id}`)}
-                      aria-label="미리듣기"
-                    >
-                      <span className="icon-play-button" />
-                    </button>
-                  </div>
-                )) : <p className={styles.emptyListMessage}>{emptyPublicMessages.monthly}</p>}
-              </div>
-            </div>
-
-            <div className="col-12 col-lg-4">
-              <div className="popular-artists-area mb-100">
-                <div className="section-heading text-left mb-50">
-                  <p>공개곡 Explore</p>
-                  <h2>최신 공개곡</h2>
-                </div>
-                {publicSongs.latest.length > 0 ? publicSongs.latest.map((item) => (
-                  <a key={item.id} className="single-artists d-flex align-items-center songsai-home-latest-item" href={buildArtistHref(item, "/explore")}>
-                    <div className="thumbnail songsai-home-thumb-with-play">
-                      <img src={item.imageUrl || "/songsai-music/img/bg-img/pa1.jpg"} alt={item.title || "최신 공개곡"} />
-                      <button
-                        type="button"
-                        className={`songsai-home-play-btn songsai-home-play-btn--overlay ${previewPlayingId === `latest-${item.id}` ? "is-playing" : ""}`}
-                        onClick={(event) => {
-                          event.preventDefault();
-                          handleTogglePreview(item, `latest-${item.id}`);
-                        }}
-                        aria-label="미리듣기"
-                      >
-                        <span className="icon-play-button" />
-                      </button>
-                    </div>
-                    <div className="content-">
-                      <h6>{item.title || "제목 생성 중"}</h6>
-                      <p>{`${item.artistName || "SongsAI Artist"} · ${formatShortDate(item.createdAt)}`}</p>
-                    </div>
-                  </a>
-                )) : <p className={styles.emptyListMessage}>{emptyPublicMessages.latest}</p>}
               </div>
             </div>
           </div>
