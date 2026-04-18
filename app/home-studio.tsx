@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 
+import { type PublicUser, SongsaiApiError, songsaiApiRequest } from "@/lib/songsai-api";
+
 import styles from "./home-studio.module.css";
 
 type ExploreSort = "latest" | "weekly" | "monthly";
@@ -68,7 +70,7 @@ const heroSlides = [
     title: "당신의 아이디어를\n완성형 음악으로",
     echo: "당신의 아이디어를 완성형 음악으로",
     description: "프로젝트, 스타일, 가사, 자산과 결과 확인까지 한 흐름으로 이어지는 songsai-music PC 작업 공간.",
-    href: "/login",
+    href: "/login?next=%2Fcreate",
     cta: "지금 시작하기",
     imageUrl: "/songsai-music/img/bg-img/hero-songsai-main.png",
     primary: true,
@@ -79,7 +81,7 @@ const heroSlides = [
     title: "곡 컨셉, 영상까지\n끊기지 않는 워크플로",
     echo: "곡 컨셉, 영상까지 끊기지 않는 워크플로",
     description: "최근 작업, 다운로드 자산, 진행 상태를 데스크톱 환경에 맞게 더 풍부하게 확인해보세요.",
-    href: "/assets",
+    href: "/explore",
     cta: "작업 둘러보기",
     imageUrl: "/songsai-music/img/bg-img/bg-4.jpg",
     primary: false,
@@ -162,6 +164,7 @@ export function HomeStudio() {
   const pendingAutoplayTrackIdRef = useRef<string | null>(null);
   const recentRailRef = useRef<HTMLDivElement | null>(null);
 
+  const [sessionUser, setSessionUser] = useState<PublicUser | null>(null);
   const [heroIndex, setHeroIndex] = useState(0);
   const [recentSongs, setRecentSongs] = useState<HomeSong[]>([]);
   const [publicSongs, setPublicSongs] = useState<Record<ExploreSort, HomeSong[]>>({
@@ -178,6 +181,32 @@ export function HomeStudio() {
       setHeroIndex((current) => (current + 1) % heroSlides.length);
     }, 6000);
     return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSession() {
+      try {
+        const response = await songsaiApiRequest<{ user: PublicUser }>("/api/v1/me", {
+          method: "GET",
+        });
+
+        if (!cancelled) {
+          setSessionUser(response.user);
+        }
+      } catch (error) {
+        if (!cancelled && error instanceof SongsaiApiError && error.status === 401) {
+          setSessionUser(null);
+        }
+      }
+    }
+
+    void loadSession();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -367,7 +396,10 @@ export function HomeStudio() {
                         <span>{slide.echo}</span>
                       </h2>
                       <p>{slide.description}</p>
-                      <Link href={slide.href} className="btn songsaiMusic-btn mt-50">
+                      <Link
+                        href={slide.id === "primary" && sessionUser ? "/create" : slide.href}
+                        className="btn songsaiMusic-btn mt-50"
+                      >
                         {slide.cta} <i className="fa fa-angle-double-right" />
                       </Link>
                     </div>

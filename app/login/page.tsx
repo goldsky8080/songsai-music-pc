@@ -39,7 +39,7 @@ const googleErrorMap: Record<string, string> = {
 const verifyMessageMap: Record<string, string> = {
   success: "이메일 인증이 완료되었습니다. 이제 로그인할 수 있습니다.",
   invalid: "인증 링크가 올바르지 않습니다.",
-  expired: "인증 링크가 만료되었습니다. 다시 회원가입하거나 인증 메일을 재요청해 주세요.",
+  expired: "인증 링크가 만료되었습니다. 다시 회원가입하거나 인증 메일을 다시 요청해 주세요.",
   used: "이미 사용된 인증 링크입니다. 로그인해 주세요.",
 };
 
@@ -68,7 +68,7 @@ function validateForm(mode: AuthMode, form: AuthPayload) {
   }
 
   if (mode === "signup" && !trimmedName) {
-    return "회원가입 시 이름을 입력해 주세요.";
+    return "회원가입을 위해 이름을 입력해 주세요.";
   }
 
   return null;
@@ -129,9 +129,7 @@ function LoginPageContent() {
             setUser(null);
           } else {
             setError(
-              requestError instanceof Error
-                ? requestError.message
-                : "현재 로그인 상태를 확인하지 못했습니다.",
+              requestError instanceof Error ? requestError.message : "현재 로그인 상태를 확인하지 못했습니다.",
             );
           }
         }
@@ -197,6 +195,7 @@ function LoginPageContent() {
       });
 
       setUser(response.user);
+
       if (mode === "signup" && response.requiresEmailVerification) {
         setUser(null);
         setMode("login");
@@ -268,7 +267,7 @@ function LoginPageContent() {
         body: JSON.stringify({ email: form.email.trim() }),
       });
 
-      setMessage(response.message ?? "가입된 미인증 계정이면 인증 메일을 다시 보냈습니다.");
+      setMessage(response.message ?? "가입한 미인증 계정이면 인증 메일을 다시 보냈습니다.");
     } catch (requestError) {
       setError(
         requestError instanceof SongsaiApiError
@@ -299,26 +298,13 @@ function LoginPageContent() {
     <main className={styles.page}>
       <section className={styles.panel}>
         <div className={styles.tabs}>
-          <button
-            className={mode === "login" ? styles.tabActive : styles.tab}
-            onClick={() => setMode("login")}
-            type="button"
-          >
+          <button className={mode === "login" ? styles.tabActive : styles.tab} onClick={() => setMode("login")} type="button">
             로그인
           </button>
-          <button
-            className={mode === "signup" ? styles.tabActive : styles.tab}
-            onClick={() => setMode("signup")}
-            type="button"
-          >
+          <button className={mode === "signup" ? styles.tabActive : styles.tab} onClick={() => setMode("signup")} type="button">
             회원가입
           </button>
-          <button
-            className={styles.tab}
-            disabled={isSubmitting}
-            onClick={handleGoogleLogin}
-            type="button"
-          >
+          <button className={styles.tab} disabled={isSubmitting} onClick={handleGoogleLogin} type="button">
             Google 로그인
           </button>
         </div>
@@ -372,6 +358,9 @@ function LoginPageContent() {
             <div className={styles.linksRow}>
               <Link className={styles.inlineLink} href={`/reset-password?next=${encodeURIComponent(safeNextPath)}`}>
                 비밀번호 재설정
+              </Link>
+              <Link className={styles.inlineLink} href="/">
+                홈화면으로
               </Link>
               <button
                 className={styles.inlineButton}

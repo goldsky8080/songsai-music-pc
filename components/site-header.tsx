@@ -9,8 +9,9 @@ import { type PublicUser, SongsaiApiError, songsaiApiRequest } from "@/lib/songs
 import styles from "./site-shell.module.css";
 
 type NavChild = {
-  href: string;
   label: string;
+  href?: string;
+  action?: "logout";
 };
 
 type NavItem = {
@@ -18,38 +19,6 @@ type NavItem = {
   label: string;
   children?: NavChild[];
 };
-
-const navItems: NavItem[] = [
-  { href: "/", label: "Home" },
-  {
-    href: "/create",
-    label: "Studio",
-    children: [
-      { href: "/create", label: "Create" },
-      { href: "/assets", label: "My Assets" },
-    ],
-  },
-  {
-    href: "/explore",
-    label: "Explore",
-    children: [
-      { href: "/explore", label: "All Songs" },
-      { href: "/explore?sort=weekly", label: "Weekly Chart" },
-      { href: "/explore?sort=monthly", label: "Monthly Chart" },
-      { href: "/explore?sort=latest", label: "Latest Public Songs" },
-    ],
-  },
-  { href: "/pricing", label: "Pricing" },
-  {
-    href: "/support",
-    label: "Support",
-    children: [
-      { href: "/support", label: "Support Center" },
-      { href: "/account", label: "Account" },
-      { href: "/login", label: "Login / Sign Up" },
-    ],
-  },
-];
 
 function normalizeHref(href: string) {
   const [pathname] = href.split("?");
@@ -103,6 +72,36 @@ export function SiteHeader() {
 
   const authLabel = useMemo(() => user?.name || user?.email || "Account", [user]);
   const isAdmin = user?.role === "ADMIN";
+  const navItems = useMemo<NavItem[]>(() => {
+    const supportChildren: NavChild[] = [{ href: "/support", label: "Support Center" }];
+
+    if (user) {
+      supportChildren.push({ href: "/account", label: "Account" });
+      //supportChildren.push({ href: "/assets", label: "My Assets" });
+      supportChildren.push({ label: "logOut", action: "logout" });
+    } else {
+      supportChildren.push({ href: "/login", label: "Login / Sign Up" });
+    }
+
+    return [
+      { href: "/", label: "Home" },
+      {
+        href: "/create",
+        label: "Studio",
+        children: [
+          { href: "/create", label: "Create" },
+          { href: "/assets", label: "My Assets" },
+        ],
+      },
+      { href: "/explore", label: "Explore" },
+      { href: "/pricing", label: "Pricing" },
+      {
+        href: "/support",
+        label: "Support",
+        children: supportChildren,
+      },
+    ];
+  }, [user]);
 
   async function handleLogout() {
     try {
@@ -145,13 +144,24 @@ export function SiteHeader() {
                 {item.children?.length ? (
                   <div className={styles.submenu}>
                     {item.children.map((child) => (
-                      <Link
-                        key={child.href}
-                        href={child.href}
-                        className={`${styles.submenuLink} ${isActive(pathname, child.href) ? styles.submenuLinkActive : ""}`}
-                      >
-                        {child.label}
-                      </Link>
+                      child.href ? (
+                        <Link
+                          key={`${item.href}-${child.href}`}
+                          href={child.href}
+                          className={`${styles.submenuLink} ${isActive(pathname, child.href) ? styles.submenuLinkActive : ""}`}
+                        >
+                          {child.label}
+                        </Link>
+                      ) : (
+                        <button
+                          key={`${item.href}-${child.label}`}
+                          type="button"
+                          className={`${styles.submenuLink} ${styles.submenuButton}`}
+                          onClick={child.action === "logout" ? handleLogout : undefined}
+                        >
+                          {child.label}
+                        </button>
+                      )
                     ))}
                   </div>
                 ) : null}
