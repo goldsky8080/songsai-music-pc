@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { AdRails } from "@/components/ad-rails";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { pageHeroImages } from "@/lib/page-hero-images";
 
 import { ArtistStudio } from "./artist-studio";
 
@@ -22,7 +23,7 @@ export default async function ArtistPage({
       <SiteHeader />
       <section
         className="breadcumb-area bg-img bg-overlay"
-        style={{ backgroundImage: "url(/songsai-music/img/bg-img/breadcumb2.jpg)" }}
+        style={{ backgroundImage: `url(${pageHeroImages.artist})` }}
       >
         <div className="bradcumbContent">
           <p>Public songs by artist</p>

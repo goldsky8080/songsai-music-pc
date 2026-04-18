@@ -53,16 +53,37 @@
   background: #fff;
 }
 
+.recentWorkbenchSection {
+  background-position: center;
+  background-size: cover;
+}
+
+.recentWorkbenchHeading {
+  color: rgba(255, 255, 255, 0.82);
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.92), 0 2px 14px rgba(0, 0, 0, 0.42);
+}
+
+.recentWorkbenchTitle {
+  color: #ffffff;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.96), 0 4px 18px rgba(0, 0, 0, 0.48);
+}
+
+.recentWorkbenchIntro {
+  color: rgba(255, 255, 255, 0.82);
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.88), 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
 .recentPlayer {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
-  gap: 28px;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 32px;
   align-items: center;
   margin-bottom: 42px;
-  padding: 28px;
-  border: 1px solid #d8d8d8;
-  background: #fff;
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.08);
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(10, 15, 22, 0.48);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(16px);
 }
 
 .emptyRecent {
@@ -78,33 +99,78 @@
 
 .recentPlayerEyebrow {
   margin: 0 0 10px;
-  color: #ff277a;
+  color: #ff7cab;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.92), 0 2px 14px rgba(0, 0, 0, 0.42);
 }
 
 .recentPlayerTitle {
   margin: 0;
+  color: #ffffff;
   font-size: 52px;
   line-height: 1.1;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.98), 0 4px 16px rgba(0, 0, 0, 0.54);
 }
 
 .recentPlayerMeta {
   margin: 18px 0 0;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.76);
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.88), 0 2px 10px rgba(0, 0, 0, 0.42);
 }
 
 .recentPlayerLyrics {
-  margin: 18px 0 24px;
-  color: #4b5563;
+  margin: 18px 0 0;
+  color: rgba(255, 255, 255, 0.88);
   font-size: 16px;
   line-height: 1.8;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.82), 0 2px 10px rgba(0, 0, 0, 0.36);
 }
 
-.recentPlayerAudio {
-  width: 100%;
+.recentPlayerControls {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 26px;
+  padding: 18px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.recentPlayerAction {
+  width: 66px;
+  height: 66px;
+  border: 0;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.92);
+  color: #111827;
+  font-size: 20px;
+}
+
+.recentPlayerActionText {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.recentPlayerActionText strong {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.recentPlayerActionText span {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.hiddenSelectedAudio {
+  display: none;
 }
 
 .emptyListMessage {
@@ -115,11 +181,67 @@
   line-height: 1.7;
 }
 
+.chartItemTitle {
+  display: block;
+  overflow: hidden;
+  max-width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.artistLinkLabel {
+  display: inline-block;
+  margin-top: 4px;
+  color: #6a7180;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.recentSliderSection {
+  margin-bottom: 32px;
+}
+
+.recentSliderHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.recentSliderEyebrow {
+  margin: 0 0 8px;
+  color: #ff7cab;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.9), 0 2px 12px rgba(0, 0, 0, 0.45);
+}
+
+.recentSliderTitle {
+  margin: 0;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 800;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.96), 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
 .albumRail {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  display: flex;
   gap: 28px;
+  overflow-x: auto;
+  padding-bottom: 10px;
   margin-bottom: 24px;
+  scroll-snap-type: x mandatory;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.albumRail::-webkit-scrollbar {
+  display: none;
 }
 
 .albumCard {
@@ -127,10 +249,16 @@
   padding: 0;
   background: transparent;
   text-align: left;
+  flex: 0 0 220px;
+  scroll-snap-align: start;
 }
 
 .albumCardActive {
   transform: translateY(-4px);
+}
+
+.recentSlideCard {
+  min-width: 220px;
 }
 
 .recentCoverWrap {
@@ -159,11 +287,67 @@
 }
 
 .recentMeta {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.76);
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.92), 0 2px 10px rgba(0, 0, 0, 0.42);
+}
+
+.albumCard :global(.album-info h5) {
+  color: #ffffff;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.98), 0 3px 12px rgba(0, 0, 0, 0.56);
 }
 
 .workflowCol {
   margin-bottom: 30px;
+}
+
+.featureShowcaseGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.featureShowcaseCard {
+  overflow: hidden;
+  border: 1px solid rgba(10, 15, 22, 0.08);
+  background: #ffffff;
+  box-shadow: 0 22px 50px rgba(15, 23, 42, 0.08);
+}
+
+.featureShowcaseImageWrap {
+  position: relative;
+}
+
+.featureShowcaseImage {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.featureShowcaseOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(7, 11, 18, 0.02) 0%, rgba(7, 11, 18, 0.36) 100%);
+  pointer-events: none;
+}
+
+.featureShowcaseBody {
+  padding: 20px 22px 24px;
+}
+
+.featureShowcaseTitle {
+  margin: 0 0 8px;
+  color: #101828;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.featureShowcaseDescription {
+  margin: 0;
+  color: #475467;
+  font-size: 16px;
+  line-height: 1.6;
 }
 
 .iconButton {
@@ -186,10 +370,6 @@
     height: 700px;
   }
 
-  .albumRail {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
   .recentPlayerTitle {
     font-size: 40px;
   }
@@ -204,8 +384,12 @@
     grid-template-columns: 1fr;
   }
 
-  .albumRail {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .recentSliderTitle {
+    font-size: 24px;
+  }
+
+  .featureShowcaseGrid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -226,8 +410,16 @@
     font-size: 34px;
   }
 
-  .albumRail {
-    grid-template-columns: 1fr;
-    gap: 20px;
+  .recentPlayerControls {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .albumCard {
+    flex-basis: 78vw;
+  }
+
+  .featureShowcaseTitle {
+    font-size: 24px;
   }
 }

@@ -91,6 +91,11 @@
   color: #fff3ea;
 }
 
+.submenuLinkActive {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff3ea;
+}
+
 .submenu {
   position: absolute;
   top: calc(100% - 2px);
@@ -139,6 +144,40 @@
   display: flex;
   align-items: center;
   gap: 14px;
+}
+
+.userMenuItem {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.userMenuButton {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.userSubmenu {
+  left: auto;
+  right: 0;
+  transform: translate(0, 8px);
+}
+
+.userMenuItem:hover .userSubmenu,
+.userMenuItem:focus-within .userSubmenu {
+  transform: translate(0, 0);
+}
+
+.submenuButton {
+  width: 100%;
+  border: 0;
+  text-align: left;
+  background: none;
+  cursor: pointer;
 }
 
 .createButton {
@@ -286,6 +325,15 @@
     gap: 4px;
   }
 
+  .userSubmenu {
+    right: auto;
+  }
+
+  .userMenuItem:hover .userSubmenu,
+  .userMenuItem:focus-within .userSubmenu {
+    transform: none;
+  }
+
   .submenuLink {
     padding: 6px 0 6px 10px;
     border-radius: 0;
@@ -305,6 +353,10 @@
   .auth {
     flex-wrap: wrap;
     gap: 12px;
+  }
+
+  .userMenuButton {
+    font-size: 14px;
   }
 
   .createButton {

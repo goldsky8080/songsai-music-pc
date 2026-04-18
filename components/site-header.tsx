@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -7,7 +8,18 @@ import { type PublicUser, SongsaiApiError, songsaiApiRequest } from "@/lib/songs
 
 import styles from "./site-shell.module.css";
 
-const navItems = [
+type NavChild = {
+  href: string;
+  label: string;
+};
+
+type NavItem = {
+  href: string;
+  label: string;
+  children?: NavChild[];
+};
+
+const navItems: NavItem[] = [
   { href: "/", label: "Home" },
   {
     href: "/create",
@@ -22,20 +34,36 @@ const navItems = [
     label: "Explore",
     children: [
       { href: "/explore", label: "All Songs" },
-      { href: "/explore?sort=weekly", label: "Weekly" },
-      { href: "/explore?sort=monthly", label: "Monthly" },
+      { href: "/explore?sort=weekly", label: "Weekly Chart" },
+      { href: "/explore?sort=monthly", label: "Monthly Chart" },
+      { href: "/explore?sort=latest", label: "Latest Public Songs" },
     ],
   },
   { href: "/pricing", label: "Pricing" },
-  { href: "/support", label: "Support" },
-] as const;
+  {
+    href: "/support",
+    label: "Support",
+    children: [
+      { href: "/support", label: "Support Center" },
+      { href: "/account", label: "Account" },
+      { href: "/login", label: "Login / Sign Up" },
+    ],
+  },
+];
+
+function normalizeHref(href: string) {
+  const [pathname] = href.split("?");
+  return pathname || "/";
+}
 
 function isActive(pathname: string, href: string) {
-  if (href === "/") {
+  const target = normalizeHref(href);
+
+  if (target === "/") {
     return pathname === "/";
   }
 
-  return pathname === href || pathname.startsWith(`${href}/`);
+  return pathname === target || pathname.startsWith(`${target}/`);
 }
 
 export function SiteHeader() {
@@ -73,7 +101,8 @@ export function SiteHeader() {
     setMenuOpen(false);
   }, [pathname]);
 
-  const authLabel = useMemo(() => user?.name || user?.email || "계정", [user]);
+  const authLabel = useMemo(() => user?.name || user?.email || "Account", [user]);
+  const isAdmin = user?.role === "ADMIN";
 
   async function handleLogout() {
     try {
@@ -87,9 +116,9 @@ export function SiteHeader() {
   return (
     <header className={styles.header}>
       <div className={styles.headerInner}>
-        <a href="/" className={styles.brand}>
+        <Link href="/" className={styles.brand}>
           SONGSAI-MUSIC
-        </a>
+        </Link>
 
         <button
           type="button"
@@ -107,18 +136,22 @@ export function SiteHeader() {
           <nav className={styles.nav}>
             {navItems.map((item) => (
               <div key={item.href} className={styles.navItem}>
-                <a
+                <Link
                   href={item.href}
                   className={`${styles.navLink} ${isActive(pathname, item.href) ? styles.navLinkActive : ""}`}
                 >
                   {item.label}
-                </a>
-                {"children" in item ? (
+                </Link>
+                {item.children?.length ? (
                   <div className={styles.submenu}>
                     {item.children.map((child) => (
-                      <a key={child.href} href={child.href} className={styles.submenuLink}>
+                      <Link
+                        key={child.href}
+                        href={child.href}
+                        className={`${styles.submenuLink} ${isActive(pathname, child.href) ? styles.submenuLinkActive : ""}`}
+                      >
                         {child.label}
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 ) : null}
@@ -127,25 +160,56 @@ export function SiteHeader() {
           </nav>
 
           <div className={styles.actions}>
-            <a href="/create" className={styles.createButton}>
+            <Link href="/create" className={styles.createButton}>
               Create
-            </a>
-            <div className={styles.auth}>
-              {user ? (
-                <>
-                  <a href="/account" className={styles.authLink}>
-                    {authLabel}
-                  </a>
-                  <button type="button" className={styles.logoutButton} onClick={handleLogout}>
+            </Link>
+
+            {user ? (
+              <div className={`${styles.navItem} ${styles.userMenuItem}`}>
+                <button type="button" className={styles.userMenuButton}>
+                  {authLabel}
+                </button>
+                <div className={`${styles.submenu} ${styles.userSubmenu}`}>
+                  <Link
+                    href="/account"
+                    className={`${styles.submenuLink} ${isActive(pathname, "/account") ? styles.submenuLinkActive : ""}`}
+                  >
+                    Account
+                  </Link>
+                  <Link
+                    href="/assets"
+                    className={`${styles.submenuLink} ${isActive(pathname, "/assets") ? styles.submenuLinkActive : ""}`}
+                  >
+                    My Assets
+                  </Link>
+                  {isAdmin ? (
+                    <>
+                      <Link
+                        href="/admin/inbox"
+                        className={`${styles.submenuLink} ${isActive(pathname, "/admin/inbox") ? styles.submenuLinkActive : ""}`}
+                      >
+                        Admin Inbox
+                      </Link>
+                      <Link
+                        href="/admin/members"
+                        className={`${styles.submenuLink} ${isActive(pathname, "/admin/members") ? styles.submenuLinkActive : ""}`}
+                      >
+                        Admin Members
+                      </Link>
+                    </>
+                  ) : null}
+                  <button type="button" className={`${styles.submenuLink} ${styles.submenuButton}`} onClick={handleLogout}>
                     로그아웃
                   </button>
-                </>
-              ) : (
-                <a href={`/login?next=${encodeURIComponent(pathname || "/")}`} className={styles.authLink}>
+                </div>
+              </div>
+            ) : (
+              <div className={styles.auth}>
+                <Link href={`/login?next=${encodeURIComponent(pathname || "/")}`} className={styles.authLink}>
                   로그인
-                </a>
-              )}
-            </div>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { pageHeroImages } from "@/lib/page-hero-images";
 import type { PublicUser } from "@/lib/songsai-api";
 
 import { MembersStudio } from "./members-studio";
@@ -63,7 +64,7 @@ export default async function MembersPage() {
       <SiteHeader />
       <section
         className="breadcumb-area bg-img bg-overlay"
-        style={{ backgroundImage: "url(/songsai-music/img/bg-img/breadcumb3.jpg)" }}
+        style={{ backgroundImage: `url(${pageHeroImages.adminMembers})` }}
       >
         <div className="bradcumbContent">
           <p>Manage verified members and signups</p>

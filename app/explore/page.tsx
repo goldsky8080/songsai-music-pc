@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { AdRails } from "@/components/ad-rails";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { pageHeroImages } from "@/lib/page-hero-images";
 
 import { ExploreStudio } from "./explore-studio";
 
@@ -17,7 +18,7 @@ export default function ExplorePage() {
       <SiteHeader />
       <section
         className="breadcumb-area bg-img bg-overlay"
-        style={{ backgroundImage: "url(/songsai-music/img/bg-img/breadcumb2.jpg)" }}
+        style={{ backgroundImage: `url(${pageHeroImages.explore})` }}
       >
         <div className="bradcumbContent">
           <p>Public songs, rankings, and artists</p>

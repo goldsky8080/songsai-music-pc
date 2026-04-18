@@ -7,7 +7,7 @@
   background:
     radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 30%),
     linear-gradient(180deg, rgba(8, 11, 19, 0.56), rgba(8, 11, 19, 0.82)),
-    url("/songsai-music/img/bg-img/hero-songsai-main.png") center / cover no-repeat;
+    url("/songsai-music/img/bg-img/login.jpg") center / cover no-repeat;
 }
 
 .panel {

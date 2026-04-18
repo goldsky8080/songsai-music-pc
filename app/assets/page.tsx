@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { AdRails } from "@/components/ad-rails";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { pageHeroImages } from "@/lib/page-hero-images";
 
 import { AssetsStudio } from "./assets-studio";
 
@@ -16,7 +17,7 @@ export default function AssetsPage() {
       <SiteHeader />
       <section
         className="breadcumb-area bg-img bg-overlay"
-        style={{ backgroundImage: "url(/songsai-music/img/bg-img/breadcumb4.jpg)" }}
+        style={{ backgroundImage: `url(${pageHeroImages.assets})` }}
       >
         <div className="bradcumbContent">
           <p>Manage every generation in one place</p>

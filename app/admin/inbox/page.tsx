@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { pageHeroImages } from "@/lib/page-hero-images";
 import type { PublicUser } from "@/lib/songsai-api";
 
 import { InboxStudio } from "./inbox-studio";
@@ -63,7 +64,7 @@ export default async function InboxPage() {
       <SiteHeader />
       <section
         className="breadcumb-area bg-img bg-overlay"
-        style={{ backgroundImage: "url(/songsai-music/img/bg-img/breadcumb3.jpg)" }}
+        style={{ backgroundImage: `url(${pageHeroImages.adminInbox})` }}
       >
         <div className="bradcumbContent">
           <p>Manage support inbox and inbound messages</p>

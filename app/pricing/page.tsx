@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { AdRails } from "@/components/ad-rails";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { pageHeroImages } from "@/lib/page-hero-images";
 
 import { PricingStudio } from "./pricing-studio";
 
@@ -16,10 +17,10 @@ export default function PricingPage() {
       <SiteHeader />
       <section
         className="breadcumb-area bg-img bg-overlay"
-        style={{ backgroundImage: "url(/songsai-music/img/bg-img/breadcumb3.jpg)" }}
+        style={{ backgroundImage: `url(${pageHeroImages.pricing})` }}
       >
         <div className="bradcumbContent">
-          <p>SongsAI Music의 현재 사용 방식과 운영 흐름을 한눈에 정리했습니다</p>
+          <p>요금제와 사용 흐름을 한눈에 정리했습니다</p>
           <h2>Pricing</h2>
         </div>
       </section>

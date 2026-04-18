@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { pageHeroImages } from "@/lib/page-hero-images";
 import type { PublicUser } from "@/lib/songsai-api";
 
 import { AccountStudio } from "./account-studio";
@@ -57,7 +58,7 @@ export default async function AccountPage() {
       <SiteHeader />
       <section
         className="breadcumb-area bg-img bg-overlay"
-        style={{ backgroundImage: "url(/songsai-music/img/bg-img/breadcumb4.jpg)" }}
+        style={{ backgroundImage: `url(${pageHeroImages.account})` }}
       >
         <div className="bradcumbContent">
           <p>계정 정보와 보안 상태를 한 화면에서 정리합니다</p>
