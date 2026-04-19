@@ -898,10 +898,10 @@ export function CreateStudio({ mode = "suno" }: CreateStudioProps) {
 
               {provider === "ace_step" ? (
                 <div className={styles.providerDraftNotice}>
-                  <strong>ACE-Step 1.5 연동 초안</strong>
+                  <strong>ACE-Step 1.5 생성 연결됨</strong>
                   <p>
-                    현재는 Create 화면에서 provider 선택 UI만 먼저 연결된 상태입니다. 실제 생성 요청은 아직 Suno만
-                    활성화되어 있고, ACE-Step은 backend provider adapter와 inference server 연결 후 활성화될 예정입니다.
+                    이 화면은 ACE-Step 전용 생성 흐름입니다. 생성 요청은 wrapper를 통해 ACE-Step API로 전달되며,
+                    정상 완료 시 기존 SongsAI 구조에 맞춰 결과가 저장됩니다.
                   </p>
                 </div>
               ) : null}
@@ -914,7 +914,7 @@ export function CreateStudio({ mode = "suno" }: CreateStudioProps) {
                   type="button"
                   className={styles.primaryButton}
                   onClick={() => void handleCreate()}
-                  disabled={isSubmitting || provider === "ace_step"}
+                  disabled={isSubmitting}
                 >
                   {isSubmitting ? "등록 중..." : "Create"}
                 </button>
