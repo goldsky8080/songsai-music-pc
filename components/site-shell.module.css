@@ -24,7 +24,12 @@
 }
 
 .brand {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 0 0 auto;
+  min-width: max-content;
+  white-space: nowrap;
   color: #ffffff;
   text-decoration: none;
   font-size: 24px;
@@ -32,6 +37,10 @@
   letter-spacing: 0.08em;
   line-height: 1;
   transform: none;
+  translate: none;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
   transition: color 0.18s ease;
 }
 
@@ -39,6 +48,7 @@
 .brand:focus-visible {
   color: #fff3ea;
   transform: none;
+  translate: none;
   text-decoration: none;
 }
 
@@ -242,8 +252,13 @@
 .logoutButton:hover,
 .logoutButton:focus-visible,
 .userMenuButton:hover,
-.userMenuButton:focus-visible {
+.userMenuButton:focus-visible,
+.brand:hover,
+.brand:focus-visible,
+.navLink:hover,
+.navLink:focus-visible {
   transform: none;
+  translate: none;
   text-decoration: none;
 }
 

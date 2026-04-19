@@ -1126,7 +1126,7 @@ export function CreateStudio({ mode = "suno" }: CreateStudioProps) {
                             </a>
                             {canDownloadVideo ? (
                               <a href={buildVideoDownloadUrl(activeItem)} className={styles.assetButton}>
-                                비디오 다운로드
+                                비디오 다운
                               </a>
                             ) : null}
                             {!isAceStepItem ? (<button
