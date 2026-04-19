@@ -48,12 +48,6 @@ export function buildSongsaiApiUrl(path: string) {
   return new URL(normalizedPath, `${base}/`);
 }
 
-function buildSongsaiProxyUrl(path: string) {
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
-  return new URL(`/api/proxy${normalizedPath}`, origin);
-}
-
 async function parseJson<T>(response: Response): Promise<T> {
   const text = await response.text();
 
@@ -99,26 +93,6 @@ function getErrorMessage(payload: ErrorPayload) {
 
 export async function songsaiApiRequest<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(buildSongsaiApiUrl(path).toString(), {
-    ...init,
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers ?? {}),
-    },
-  });
-
-  if (!response.ok) {
-    const payload = await parseJson<ErrorPayload>(response);
-    const message = getErrorMessage(payload);
-
-    throw new SongsaiApiError(message, response.status);
-  }
-
-  return parseJson<T>(response);
-}
-
-export async function songsaiProxyRequest<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(buildSongsaiProxyUrl(path).toString(), {
     ...init,
     credentials: "include",
     headers: {
