@@ -686,7 +686,7 @@ export function AssetsStudio() {
                               <a href={buildVideoDownloadUrl(activeItem)} className={styles.assetButton}>
                                 비디오 다운로드
                               </a>
-                            ) : (
+                            ) : !isAceStepItem ? (
                               <button
                                 type="button"
                                 className={canCreateVideo ? styles.assetButton : styles.assetButtonDisabled}
@@ -701,7 +701,7 @@ export function AssetsStudio() {
                                     ? "비디오 생성 중..."
                                     : "비디오 생성"}
                               </button>
-                            )}
+                            ) : null}
                           </div>
                         </div>
                       </article>

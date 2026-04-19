@@ -1129,7 +1129,7 @@ export function CreateStudio({ mode = "suno" }: CreateStudioProps) {
                                 비디오 다운로드
                               </a>
                             ) : null}
-                            <button
+                            {!isAceStepItem ? (<button
                               type="button"
                               className={canDownloadVideo ? styles.hiddenAudio : canCreateVideo ? styles.assetButton : styles.assetButtonDisabled}
                               disabled={canDownloadVideo || isAceStepItem || !canCreateVideo || isCreatingVideoId === activeItem.id}
@@ -1142,7 +1142,7 @@ export function CreateStudio({ mode = "suno" }: CreateStudioProps) {
                                 : hasSimulatedVideoProgress
                                   ? "비디오 생성 중..."
                                   : "비디오 생성"}
-                            </button>
+                            </button>) : null}
                           </div>
                         </div>
                       </article>

@@ -80,10 +80,14 @@
 }
 
 .navLink {
+  display: inline-flex;
+  align-items: center;
   color: rgba(255, 255, 255, 0.9);
   text-decoration: none;
   font-size: 16px;
   font-weight: 700;
+  line-height: 1;
+  transform: none;
   transition: color 0.18s ease;
 }
 
@@ -94,6 +98,8 @@
 .navLink:hover,
 .navLink:focus-visible {
   color: #fff3ea;
+  transform: none;
+  text-decoration: none;
 }
 
 .submenuLinkActive {
@@ -157,12 +163,16 @@
 }
 
 .userMenuButton {
+  display: inline-flex;
+  align-items: center;
   border: 0;
   background: none;
   padding: 0;
   color: rgba(255, 255, 255, 0.95);
   font-size: 15px;
   font-weight: 700;
+  line-height: 1;
+  transform: none;
   cursor: pointer;
 }
 
@@ -198,6 +208,8 @@
   background: linear-gradient(90deg, #f8dbe8 0%, #f7eaf6 100%);
   font-size: 15px;
   font-weight: 700;
+  line-height: 1;
+  transform: none;
   box-shadow: 0 10px 32px rgba(213, 91, 159, 0.2);
 }
 
@@ -210,6 +222,8 @@
 
 .authLink,
 .logoutButton {
+  display: inline-flex;
+  align-items: center;
   color: rgba(255, 255, 255, 0.95);
   text-decoration: none;
   font-size: 15px;
@@ -217,6 +231,20 @@
   background: none;
   border: 0;
   padding: 0;
+  line-height: 1;
+  transform: none;
+}
+
+.createButton:hover,
+.createButton:focus-visible,
+.authLink:hover,
+.authLink:focus-visible,
+.logoutButton:hover,
+.logoutButton:focus-visible,
+.userMenuButton:hover,
+.userMenuButton:focus-visible {
+  transform: none;
+  text-decoration: none;
 }
 
 .logoutButton {
