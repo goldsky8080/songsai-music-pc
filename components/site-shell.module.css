@@ -24,17 +24,22 @@
 }
 
 .brand {
+  display: inline-block;
   color: #ffffff;
   text-decoration: none;
   font-size: 24px;
   font-weight: 800;
   letter-spacing: 0.08em;
+  line-height: 1;
+  transform: none;
   transition: color 0.18s ease;
 }
 
 .brand:hover,
 .brand:focus-visible {
   color: #fff3ea;
+  transform: none;
+  text-decoration: none;
 }
 
 .mobileMenuButton {

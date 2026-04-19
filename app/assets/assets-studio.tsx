@@ -11,6 +11,7 @@ type MusicItem = {
   id: string;
   requestGroupId?: string | null;
   title?: string | null;
+  provider?: string | null;
   lyrics?: string | null;
   stylePrompt?: string | null;
   status: string;
@@ -522,6 +523,7 @@ export function AssetsStudio() {
                   {groupedItems.map((group, groupIndex) => {
                     const activeIndex = Math.min(activeSlides[group.id] ?? 0, Math.max(group.items.length - 1, 0));
                     const activeItem = group.items[activeIndex];
+                    const isAceStepItem = activeItem.provider === "ACE_STEP";
                     const ready = isStabilized(activeItem.createdAt);
                     const canDownloadVideo = Boolean(
                       activeItem.canDownloadVideo && activeItem.videoId && activeItem.videoStatus === "completed",
@@ -529,7 +531,7 @@ export function AssetsStudio() {
                     const isVideoPending =
                       activeItem.videoStatus === "queued" || activeItem.videoStatus === "processing";
                     const canCreateVideo =
-                      ready && Boolean(activeItem.canCreateVideo) && !canDownloadVideo && !isVideoPending;
+                      !isAceStepItem && ready && Boolean(activeItem.canCreateVideo) && !canDownloadVideo && !isVideoPending;
                     const videoProgress = getSimulatedVideoProgress(
                       activeItem,
                       progressTick,
@@ -688,10 +690,12 @@ export function AssetsStudio() {
                               <button
                                 type="button"
                                 className={canCreateVideo ? styles.assetButton : styles.assetButtonDisabled}
-                                disabled={!canCreateVideo || isCreatingVideoId === activeItem.id}
+                                disabled={isAceStepItem || !canCreateVideo || isCreatingVideoId === activeItem.id}
                                 onClick={() => void handleCreateVideo(activeItem)}
                               >
-                                {isCreatingVideoId === activeItem.id
+                                {isAceStepItem
+                                  ? "ACE-Step 비디오 미지원"
+                                  : isCreatingVideoId === activeItem.id
                                   ? "비디오 준비 중..."
                                   : isVideoPending
                                     ? "비디오 생성 중..."
