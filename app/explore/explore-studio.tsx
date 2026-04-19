@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { SongsaiApiError, songsaiApiRequest } from "@/lib/songsai-api";
+import { SongsaiApiError, songsaiApiRequest, songsaiProxyRequest } from "@/lib/songsai-api";
 
 import styles from "./explore-studio.module.css";
 
@@ -244,7 +244,7 @@ export function ExploreStudio() {
     setMessage("");
 
     try {
-      const response = await songsaiApiRequest<{ likeCount: number; likedByMe: boolean }>(
+      const response = await songsaiProxyRequest<{ likeCount: number; likedByMe: boolean }>(
         `/api/v1/music/${item.id}/like`,
         {
           method: item.likedByMe ? "DELETE" : "POST",
