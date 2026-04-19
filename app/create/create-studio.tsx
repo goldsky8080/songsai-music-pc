@@ -15,13 +15,14 @@ import styles from "./create-studio.module.css";
 
 type LyricMode = "manual" | "ai_lyrics" | "auto";
 type VocalGender = "auto" | "female" | "male";
-type ModelVersion = "v4_5_plus" | "v5" | "v5_5";
+type ModelVersion = "v4_5_plus" | "v5" | "v5_5" | "ace_step_1_5";
 type CreateProvider = "suno" | "ace_step";
 type AutoTopic = "love" | "hometown" | "comfort" | "life";
 type AutoEmotion = "yearning" | "warmth" | "lonely" | "hopeful";
 type AutoGenre = "trot" | "ballad" | "dance" | "pop";
 type AutoTempo = "slow" | "medium" | "fast";
 type AutoInstrument = "guitar" | "piano" | "strings" | "synth";
+type AceStepDuration = 120 | 150 | 180;
 
 type MusicItem = {
   id: string;
@@ -112,6 +113,12 @@ const MODEL_CHOICES: Array<{ value: ModelVersion; label: string }> = [
   { value: "v4_5_plus", label: "Blue" },
   { value: "v5", label: "Red" },
   { value: "v5_5", label: "Gold" },
+];
+
+const ACE_STEP_DURATION_CHOICES: Array<{ value: AceStepDuration; label: string }> = [
+  { value: 120, label: "120초" },
+  { value: 150, label: "150초" },
+  { value: 180, label: "180초" },
 ];
 
 const PROVIDER_CHOICES: Array<{ value: CreateProvider; label: string; description: string }> = [
@@ -335,6 +342,7 @@ export function CreateStudio({ mode = "suno" }: CreateStudioProps) {
   const [vocalGender, setVocalGender] = useState<VocalGender>("auto");
   const [provider, setProvider] = useState<CreateProvider>(mode === "ace_step" ? "ace_step" : "suno");
   const [modelVersion, setModelVersion] = useState<ModelVersion>("v5_5");
+  const [aceStepDuration, setAceStepDuration] = useState<AceStepDuration>(120);
   const [autoTopic, setAutoTopic] = useState<AutoTopic>("hometown");
   const [autoEmotion, setAutoEmotion] = useState<AutoEmotion>("yearning");
   const [autoGenre, setAutoGenre] = useState<AutoGenre>("ballad");
@@ -503,7 +511,14 @@ export function CreateStudio({ mode = "suno" }: CreateStudioProps) {
         vocalGender,
         trackCount: 1 as const,
         provider,
-        modelVersion,
+        ...(provider === "ace_step"
+          ? {
+              modelVersion: "ace_step_1_5" as const,
+              duration: aceStepDuration,
+            }
+          : {
+              modelVersion,
+            }),
       };
 
       const response = await songsaiApiRequest<CreateMusicResponse>("/api/v1/music", {
@@ -526,6 +541,7 @@ export function CreateStudio({ mode = "suno" }: CreateStudioProps) {
       setVocalGender("auto");
       setProvider(isAceStepMode ? "ace_step" : "suno");
       setModelVersion("v5_5");
+      setAceStepDuration(120);
       setAutoTopic("hometown");
       setAutoEmotion("yearning");
       setAutoGenre("ballad");
@@ -851,21 +867,39 @@ export function CreateStudio({ mode = "suno" }: CreateStudioProps) {
                   </div>
                 </div>
 
-                <div className={styles.optionGroup}>
-                  <span className={styles.optionLabel}>모델 버전</span>
-                  <div className={styles.optionButtons}>
-                    {MODEL_CHOICES.map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        className={modelVersion === option.value ? styles.selectedOptionButton : styles.optionButton}
-                        onClick={() => setModelVersion(option.value)}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
+                {isAceStepMode ? (
+                  <div className={styles.optionGroup}>
+                    <span className={styles.optionLabel}>생성 길이</span>
+                    <div className={styles.optionButtons}>
+                      {ACE_STEP_DURATION_CHOICES.map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          className={aceStepDuration === option.value ? styles.selectedOptionButton : styles.optionButton}
+                          onClick={() => setAceStepDuration(option.value)}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className={styles.optionGroup}>
+                    <span className={styles.optionLabel}>모델 버전</span>
+                    <div className={styles.optionButtons}>
+                      {MODEL_CHOICES.map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          className={modelVersion === option.value ? styles.selectedOptionButton : styles.optionButton}
+                          onClick={() => setModelVersion(option.value)}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {isAceStepMode ? null : (
@@ -903,6 +937,7 @@ export function CreateStudio({ mode = "suno" }: CreateStudioProps) {
                     이 화면은 ACE-Step 전용 생성 흐름입니다. 생성 요청은 wrapper를 통해 ACE-Step API로 전달되며,
                     정상 완료 시 기존 SongsAI 구조에 맞춰 결과가 저장됩니다.
                   </p>
+                  <p>현재 전송값: model=acestep-v15-turbo, modelVersion=ace_step_1_5, vocalLanguage=ko, thinking=false</p>
                 </div>
               ) : null}
 
