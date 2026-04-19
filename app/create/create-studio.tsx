@@ -16,6 +16,7 @@ import styles from "./create-studio.module.css";
 type LyricMode = "manual" | "ai_lyrics" | "auto";
 type VocalGender = "auto" | "female" | "male";
 type ModelVersion = "v4_5_plus" | "v5" | "v5_5";
+type CreateProvider = "suno" | "ace_step";
 type AutoTopic = "love" | "hometown" | "comfort" | "life";
 type AutoEmotion = "yearning" | "warmth" | "lonely" | "hopeful";
 type AutoGenre = "trot" | "ballad" | "dance" | "pop";
@@ -67,6 +68,12 @@ type MusicGroup = {
   items: MusicItem[];
 };
 
+type CreateStudioMode = "suno" | "ace_step";
+
+type CreateStudioProps = {
+  mode?: CreateStudioMode;
+};
+
 const TOPIC_LABELS: Record<AutoTopic, string> = {
   love: "사랑",
   hometown: "고향",
@@ -105,6 +112,11 @@ const MODEL_CHOICES: Array<{ value: ModelVersion; label: string }> = [
   { value: "v4_5_plus", label: "Blue" },
   { value: "v5", label: "Red" },
   { value: "v5_5", label: "Gold" },
+];
+
+const PROVIDER_CHOICES: Array<{ value: CreateProvider; label: string; description: string }> = [
+  { value: "suno", label: "Suno", description: "현재 운영 생성 엔진" },
+  { value: "ace_step", label: "ACE-Step 1.5", description: "오픈소스 엔진 연동 초안" },
 ];
 
 const FALLBACK_COVERS = [
@@ -309,7 +321,7 @@ function mergeMusicItems(existing: MusicItem[], incoming: MusicItem[], append: b
   return merged;
 }
 
-export function CreateStudio() {
+export function CreateStudio({ mode = "suno" }: CreateStudioProps) {
   const router = useRouter();
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -321,6 +333,7 @@ export function CreateStudio() {
   const [lyricMode, setLyricMode] = useState<LyricMode>("manual");
   const [isMr, setIsMr] = useState(false);
   const [vocalGender, setVocalGender] = useState<VocalGender>("auto");
+  const [provider, setProvider] = useState<CreateProvider>(mode === "ace_step" ? "ace_step" : "suno");
   const [modelVersion, setModelVersion] = useState<ModelVersion>("v5_5");
   const [autoTopic, setAutoTopic] = useState<AutoTopic>("hometown");
   const [autoEmotion, setAutoEmotion] = useState<AutoEmotion>("yearning");
@@ -369,6 +382,7 @@ export function CreateStudio() {
   );
 
   const groupedItems = useMemo(() => groupMusicItems(myItems), [myItems]);
+  const isAceStepMode = mode === "ace_step";
 
   async function loadMyItems(offset = 0, append = false) {
     const mine = await songsaiApiRequest<MusicListResponse>(`/api/v1/music?limit=${PAGE_SIZE}&offset=${offset}`);
@@ -488,6 +502,7 @@ export function CreateStudio() {
         isMr,
         vocalGender,
         trackCount: 1 as const,
+        provider,
         modelVersion,
       };
 
@@ -509,6 +524,7 @@ export function CreateStudio() {
       setLyricMode("manual");
       setIsMr(false);
       setVocalGender("auto");
+      setProvider(isAceStepMode ? "ace_step" : "suno");
       setModelVersion("v5_5");
       setAutoTopic("hometown");
       setAutoEmotion("yearning");
@@ -636,6 +652,10 @@ export function CreateStudio() {
               <p className={styles.blockText}>
                 제목을 비우면 자동 제목 생성 흐름을 따르고, 생성 직후에는 초기 미리듣기 URL로 먼저 들을 수 있습니다. 다운로드와 비디오 생성은 5분 뒤부터 가능합니다.
               </p>
+
+              {isAceStepMode ? (
+                <div className={styles.providerLockedBadge}>ACE-Step Dedicated Route</div>
+              ) : null}
 
               <div className={styles.fieldGrid}>
                 <label className={styles.fieldLabel}>
@@ -848,6 +868,44 @@ export function CreateStudio() {
                 </div>
               </div>
 
+              {isAceStepMode ? null : (
+              <div className={styles.optionGroup}>
+                <span className={styles.optionLabel}>생성 엔진</span>
+                <div className={styles.optionButtons}>
+                  {PROVIDER_CHOICES.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      className={provider === option.value ? styles.selectedOptionButton : styles.optionButton}
+                      onClick={() => setProvider(option.value)}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+                <div className={styles.providerDescriptions}>
+                  {PROVIDER_CHOICES.map((option) => (
+                    <span
+                      key={option.value}
+                      className={provider === option.value ? styles.providerDescriptionActive : styles.providerDescription}
+                    >
+                      {option.label}: {option.description}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              )}
+
+              {provider === "ace_step" ? (
+                <div className={styles.providerDraftNotice}>
+                  <strong>ACE-Step 1.5 연동 초안</strong>
+                  <p>
+                    현재는 Create 화면에서 provider 선택 UI만 먼저 연결된 상태입니다. 실제 생성 요청은 아직 Suno만
+                    활성화되어 있고, ACE-Step은 backend provider adapter와 inference server 연결 후 활성화될 예정입니다.
+                  </p>
+                </div>
+              ) : null}
+
               {message ? <div className={styles.message}>{message}</div> : null}
               {error ? <div className={styles.error}>{error}</div> : null}
 
@@ -856,7 +914,7 @@ export function CreateStudio() {
                   type="button"
                   className={styles.primaryButton}
                   onClick={() => void handleCreate()}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || provider === "ace_step"}
                 >
                   {isSubmitting ? "등록 중..." : "Create"}
                 </button>

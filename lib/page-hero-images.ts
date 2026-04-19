@@ -1,5 +1,6 @@
 export const pageHeroImages = {
   create: "/songsai-music/img/bg-img/page-create-hero.jpg",
+  aceStep: "/songsai-music/img/bg-img/page-create-hero.jpg",
   assets: "/songsai-music/img/bg-img/page-assets-hero.jpg",
   explore: "/songsai-music/img/bg-img/page-explore-hero.jpg",
   pricing: "/songsai-music/img/bg-img/page-pricing-hero.jpg",
@@ -13,6 +14,8 @@ export const pageHeroImages = {
 export const pageHeroPrompts = {
   create:
     "A dramatic creative music composition setup, illuminated synths, pads, piano keys, layered control surface, energetic magenta and cyan lights, dark moody studio atmosphere, premium editorial photography, inspiring and futuristic feeling, realistic, no text, no watermark, no logo, 16:9",
+  aceStep:
+    "A premium AI music inference studio, cinematic server-side audio generation environment with glowing waveform monitors, high-end GPU rack ambience, refined dark navy and cyan lighting, futuristic but realistic editorial photography, no text, no watermark, no logo, 16:9",
   assets:
     "A premium digital asset management workspace for music creators, organized desk with album covers, waveform displays, headphones, downloads and creative tools, dark navy cinematic lighting with subtle cyan highlights, realistic editorial photography, polished and professional mood, no text, no watermark, no logo, 16:9",
   explore:

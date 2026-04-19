@@ -242,6 +242,64 @@
   gap: 10px;
 }
 
+.providerDescriptions {
+  display: grid;
+  gap: 6px;
+}
+
+.providerDescription,
+.providerDescriptionActive {
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.providerDescription {
+  color: #9fb7b0;
+}
+
+.providerDescriptionActive {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.providerDraftNotice {
+  border: 1px solid rgba(255, 214, 102, 0.24);
+  border-radius: 10px;
+  background: rgba(255, 214, 102, 0.1);
+  padding: 14px 16px;
+  color: #fff7df;
+}
+
+.providerDraftNotice strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+.providerDraftNotice p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.providerLockedBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 24px;
+  padding: 0 16px;
+  border: 1px solid rgba(185, 255, 226, 0.5);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(223, 255, 241, 0.96), rgba(170, 255, 216, 0.88));
+  color: #10231d;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  box-shadow: 0 18px 34px rgba(99, 255, 190, 0.22);
+}
+
 .optionButton,
 .selectedOptionButton {
   border-radius: 999px;
