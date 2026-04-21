@@ -12,6 +12,7 @@ type ExploreSort = "latest" | "weekly" | "monthly";
 type HomeSong = {
   id: string;
   title?: string | null;
+  provider?: string | null;
   artistId?: string | null;
   artistName?: string | null;
   imageUrl?: string | null;
@@ -158,6 +159,10 @@ function buildRecentAudioUrl(item: HomeSong) {
   return item.mp3Url || buildPreviewUrl(item);
 }
 
+function isHomeSunoTrack(item: HomeSong) {
+  return (item.provider || "").toUpperCase() !== "ACE_STEP";
+}
+
 export function HomeStudio() {
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const selectedAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -236,8 +241,9 @@ export function HomeStudio() {
       if (cancelled) return;
 
       if (recentResult.status === "fulfilled") {
-        setRecentSongs(recentResult.value.items);
-        setSelectedTrackId(recentResult.value.items[0]?.id ?? "");
+        const filteredRecentSongs = recentResult.value.items.filter(isHomeSunoTrack);
+        setRecentSongs(filteredRecentSongs);
+        setSelectedTrackId(filteredRecentSongs[0]?.id ?? "");
       }
 
       setPublicSongs({
