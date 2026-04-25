@@ -424,6 +424,21 @@
   margin-top: 0;
 }
 
+.shareTooltip {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(255, 243, 234, 0.14);
+  border: 1px solid rgba(244, 195, 164, 0.28);
+  color: #fff3ea;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
 .assetButton,
 .assetButtonDisabled,
 .assetButtonSecondary {

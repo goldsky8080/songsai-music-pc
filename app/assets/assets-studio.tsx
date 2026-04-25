@@ -159,6 +159,28 @@ function buildVideoDownloadUrl(item: MusicItem) {
   return buildSongsaiApiUrl(`/api/v1/music/${item.id}/video/download`).toString();
 }
 
+async function copyText(value: string) {
+  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(value);
+    return true;
+  }
+
+  if (typeof document === "undefined") {
+    return false;
+  }
+
+  const input = document.createElement("textarea");
+  input.value = value;
+  input.setAttribute("readonly", "true");
+  input.style.position = "absolute";
+  input.style.left = "-9999px";
+  document.body.appendChild(input);
+  input.select();
+  const success = document.execCommand("copy");
+  document.body.removeChild(input);
+  return success;
+}
+
 function getSimulatedVideoProgress(item: MusicItem, nowMs: number, startedAtMs?: number | null) {
   if (item.videoStatus === "completed" || item.canDownloadVideo) {
     return null;
@@ -240,6 +262,7 @@ export function AssetsStudio() {
   const [progressTick, setCountdownTick] = useState(() => Date.now());
   const [videoProgressStarts, setVideoProgressStarts] = useState<Record<string, number>>({});
   const [activeProviderTab, setActiveProviderTab] = useState<AssetsProviderTab>("songsai");
+  const [shareTooltipId, setShareTooltipId] = useState<string | null>(null);
 
   const groupedItems = useMemo(() => groupMusicItems(items), [items]);
   const visibleGroups = groupedItems;
@@ -458,6 +481,35 @@ export function AssetsStudio() {
       );
     } finally {
       setIsUpdatingVisibilityId(null);
+    }
+  }
+
+  async function handleCopyShareUrl(item: MusicItem) {
+    if (item.isPublic === false) {
+      setShareTooltipId(null);
+      setMessage(null);
+      setError("공유 링크는 Public 곡에서만 복사할 수 있습니다. 먼저 공개로 전환해 주세요.");
+      return;
+    }
+
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      const copied = await copyText(`${window.location.origin}/share/${item.id}`);
+      setError(null);
+      setMessage(null);
+      setShareTooltipId(copied ? item.id : null);
+      if (copied) {
+        window.setTimeout(() => {
+          setShareTooltipId((current) => (current === item.id ? null : current));
+        }, 1800);
+      }
+    } catch {
+      setShareTooltipId(null);
+      setMessage(null);
+      setError("공유 링크 복사에 실패했습니다.");
     }
   }
 
@@ -711,6 +763,18 @@ export function AssetsStudio() {
                             >
                               다운로드
                             </a>
+                            <button
+                              type="button"
+                              className={styles.assetButton}
+                              onClick={() => void handleCopyShareUrl(activeItem)}
+                            >
+                              공유
+                            </button>
+                            {shareTooltipId === activeItem.id ? (
+                              <span className={styles.shareTooltip} role="status" aria-live="polite">
+                                복사되었습니다.
+                              </span>
+                            ) : null}
                             {canDownloadVideo ? (
                               <a href={buildVideoDownloadUrl(activeItem)} className={styles.assetButton}>
                                 비디오 다운
