@@ -247,9 +247,9 @@ export function HomeStudio() {
       }
 
       setPublicSongs({
-        weekly: weeklyResult.status === "fulfilled" ? weeklyResult.value.items : [],
-        monthly: monthlyResult.status === "fulfilled" ? monthlyResult.value.items : [],
-        latest: latestResult.status === "fulfilled" ? latestResult.value.items : [],
+        weekly: weeklyResult.status === "fulfilled" ? weeklyResult.value.items.filter(isHomeSunoTrack) : [],
+        monthly: monthlyResult.status === "fulfilled" ? monthlyResult.value.items.filter(isHomeSunoTrack) : [],
+        latest: latestResult.status === "fulfilled" ? latestResult.value.items.filter(isHomeSunoTrack) : [],
       });
     }
 

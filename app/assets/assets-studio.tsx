@@ -60,6 +60,8 @@ type MusicGroup = {
   items: MusicItem[];
 };
 
+type AssetsProviderTab = "songsai" | "ace_step";
+
 const FALLBACK_COVERS = [
   "/songsai-music/img/bg-img/e1.jpg",
   "/songsai-music/img/bg-img/e2.jpg",
@@ -233,8 +235,18 @@ export function AssetsStudio() {
   const [nextOffset, setNextOffset] = useState(0);
   const [progressTick, setCountdownTick] = useState(() => Date.now());
   const [videoProgressStarts, setVideoProgressStarts] = useState<Record<string, number>>({});
+  const [activeProviderTab, setActiveProviderTab] = useState<AssetsProviderTab>("songsai");
 
   const groupedItems = useMemo(() => groupMusicItems(items), [items]);
+  const visibleGroups = useMemo(
+    () =>
+      groupedItems.filter((group) => {
+        const activeItem = group.items[group.items.length - 1];
+        const provider = (activeItem?.provider || "").toUpperCase();
+        return activeProviderTab === "ace_step" ? provider === "ACE_STEP" : provider !== "ACE_STEP";
+      }),
+    [activeProviderTab, groupedItems],
+  );
 
   async function loadItems(offset = 0, append = false) {
     const response = await songsaiApiRequest<MusicListResponse>(
@@ -514,13 +526,33 @@ export function AssetsStudio() {
                 생성 요청 한 번에 묶인 곡들은 카드 하나 안에서 넘겨보며 관리할 수 있습니다.
                 5분 전에는 미리듣기만 가능하고, 이후에는 다운로드와 비디오 생성이 가능합니다.
               </p>
+              <div className={styles.providerTabs} role="tablist" aria-label="Assets provider tabs">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={activeProviderTab === "songsai"}
+                  className={activeProviderTab === "songsai" ? styles.providerTabActive : styles.providerTab}
+                  onClick={() => setActiveProviderTab("songsai")}
+                >
+                  SongsAI
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={activeProviderTab === "ace_step"}
+                  className={activeProviderTab === "ace_step" ? styles.providerTabActive : styles.providerTab}
+                  onClick={() => setActiveProviderTab("ace_step")}
+                >
+                  ACE-Step
+                </button>
+              </div>
 
               {message ? <div className={styles.message}>{message}</div> : null}
               {error ? <div className={styles.error}>{error}</div> : null}
 
-              {groupedItems.length > 0 ? (
+              {visibleGroups.length > 0 ? (
                 <div className={styles.requestGrid}>
-                  {groupedItems.map((group, groupIndex) => {
+                  {visibleGroups.map((group, groupIndex) => {
                     const activeIndex = Math.min(activeSlides[group.id] ?? 0, Math.max(group.items.length - 1, 0));
                     const activeItem = group.items[activeIndex];
                     const isAceStepItem = activeItem.provider === "ACE_STEP";
@@ -715,9 +747,9 @@ export function AssetsStudio() {
                 </div>
               )}
 
-              {groupedItems.length > 0 ? <div ref={loadMoreRef} className={styles.loadMoreSentinel} /> : null}
+              {visibleGroups.length > 0 ? <div ref={loadMoreRef} className={styles.loadMoreSentinel} /> : null}
               {isLoadingMore ? <p className={styles.loadMoreText}>이전 자산을 더 불러오는 중입니다...</p> : null}
-              {!hasMore && groupedItems.length > 0 ? (
+              {!hasMore && visibleGroups.length > 0 ? (
                 <p className={styles.loadMoreText}>모든 자산을 불러왔습니다.</p>
               ) : null}
 

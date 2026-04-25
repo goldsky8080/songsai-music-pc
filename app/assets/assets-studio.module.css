@@ -96,6 +96,37 @@
   line-height: 1.8;
 }
 
+.providerTabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+  margin-bottom: 8px;
+}
+
+.providerTab,
+.providerTabActive {
+  min-width: 120px;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.providerTab {
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: rgba(241, 245, 249, 0.92);
+  color: #334155;
+}
+
+.providerTabActive {
+  border: 1px solid rgba(182, 72, 34, 0.22);
+  background: linear-gradient(135deg, rgba(182, 72, 34, 0.14), rgba(15, 23, 42, 0.08));
+  color: #0f172a;
+}
+
 .message,
 .error {
   margin-top: 18px;
