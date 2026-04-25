@@ -249,7 +249,7 @@ export function AssetsStudio() {
     const response = await songsaiApiRequest<MusicListResponse>(
       `/api/v1/music?provider=${provider}&limit=${PAGE_SIZE}&offset=${offset}`,
     );
-    setItems((current) => mergeMusicItems(current, response.items, append));
+    setItems((current) => (append ? mergeMusicItems(current, response.items, true) : response.items));
     setVideoProgressStarts((current) => {
       const next = { ...current };
       for (const item of response.items) {
