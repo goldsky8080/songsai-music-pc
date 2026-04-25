@@ -199,6 +199,10 @@ function groupMusicItems(items: MusicItem[]) {
   }));
 }
 
+function getProviderQueryValue(tab: AssetsProviderTab) {
+  return tab === "ace_step" ? "ace_step" : "suno";
+}
+
 function mergeMusicItems(existing: MusicItem[], incoming: MusicItem[], append: boolean) {
   const base = append ? [...existing, ...incoming] : [...incoming, ...existing];
   const seen = new Set<string>();
@@ -238,19 +242,12 @@ export function AssetsStudio() {
   const [activeProviderTab, setActiveProviderTab] = useState<AssetsProviderTab>("songsai");
 
   const groupedItems = useMemo(() => groupMusicItems(items), [items]);
-  const visibleGroups = useMemo(
-    () =>
-      groupedItems.filter((group) => {
-        const activeItem = group.items[group.items.length - 1];
-        const provider = (activeItem?.provider || "").toUpperCase();
-        return activeProviderTab === "ace_step" ? provider === "ACE_STEP" : provider !== "ACE_STEP";
-      }),
-    [activeProviderTab, groupedItems],
-  );
+  const visibleGroups = groupedItems;
 
   async function loadItems(offset = 0, append = false) {
+    const provider = getProviderQueryValue(activeProviderTab);
     const response = await songsaiApiRequest<MusicListResponse>(
-      `/api/v1/music?limit=${PAGE_SIZE}&offset=${offset}`,
+      `/api/v1/music?provider=${provider}&limit=${PAGE_SIZE}&offset=${offset}`,
     );
     setItems((current) => mergeMusicItems(current, response.items, append));
     setVideoProgressStarts((current) => {
@@ -299,7 +296,7 @@ export function AssetsStudio() {
     return () => {
       cancelled = true;
     };
-  }, [router]);
+  }, [activeProviderTab, router]);
 
   useEffect(() => {
     const timer = window.setInterval(() => {

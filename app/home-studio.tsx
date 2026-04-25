@@ -159,10 +159,6 @@ function buildRecentAudioUrl(item: HomeSong) {
   return item.mp3Url || buildPreviewUrl(item);
 }
 
-function isHomeSunoTrack(item: HomeSong) {
-  return (item.provider || "").toUpperCase() !== "ACE_STEP";
-}
-
 export function HomeStudio() {
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const selectedAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -219,10 +215,10 @@ export function HomeStudio() {
 
     async function loadHomeData() {
       const [recentResult, weeklyResult, monthlyResult, latestResult] = await Promise.allSettled([
-        requestHomePublicData<RecentResponse>("/api/v1/music/recent?limit=10"),
-        requestHomePublicData<ExploreResponse>("/api/v1/explore?sort=weekly&limit=6&offset=0"),
-        requestHomePublicData<ExploreResponse>("/api/v1/explore?sort=monthly&limit=6&offset=0"),
-        requestHomePublicData<ExploreResponse>("/api/v1/explore?sort=latest&limit=6&offset=0"),
+        requestHomePublicData<RecentResponse>("/api/v1/music/recent?provider=suno&limit=10"),
+        requestHomePublicData<ExploreResponse>("/api/v1/explore?provider=suno&sort=weekly&limit=6&offset=0"),
+        requestHomePublicData<ExploreResponse>("/api/v1/explore?provider=suno&sort=monthly&limit=6&offset=0"),
+        requestHomePublicData<ExploreResponse>("/api/v1/explore?provider=suno&sort=latest&limit=6&offset=0"),
       ]);
 
       if (recentResult.status === "rejected") {
@@ -241,15 +237,14 @@ export function HomeStudio() {
       if (cancelled) return;
 
       if (recentResult.status === "fulfilled") {
-        const filteredRecentSongs = recentResult.value.items.filter(isHomeSunoTrack);
-        setRecentSongs(filteredRecentSongs);
-        setSelectedTrackId(filteredRecentSongs[0]?.id ?? "");
+        setRecentSongs(recentResult.value.items);
+        setSelectedTrackId(recentResult.value.items[0]?.id ?? "");
       }
 
       setPublicSongs({
-        weekly: weeklyResult.status === "fulfilled" ? weeklyResult.value.items.filter(isHomeSunoTrack) : [],
-        monthly: monthlyResult.status === "fulfilled" ? monthlyResult.value.items.filter(isHomeSunoTrack) : [],
-        latest: latestResult.status === "fulfilled" ? latestResult.value.items.filter(isHomeSunoTrack) : [],
+        weekly: weeklyResult.status === "fulfilled" ? weeklyResult.value.items : [],
+        monthly: monthlyResult.status === "fulfilled" ? monthlyResult.value.items : [],
+        latest: latestResult.status === "fulfilled" ? latestResult.value.items : [],
       });
     }
 
