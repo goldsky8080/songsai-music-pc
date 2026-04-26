@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { PaymentCurrency, PaymentPayMethod, WindowType, requestPayment } from "@portone/browser-sdk/v2";
+import { useCallback, useEffect, useState } from "react";
+import { PaymentCurrency, PaymentPayMethod, requestPayment } from "@portone/browser-sdk/v2";
+
 import { SongsaiApiError, songsaiApiRequest } from "@/lib/songsai-api";
+
 import styles from "./pricing-studio.module.css";
 
 type CreditBalance = {
@@ -35,6 +37,8 @@ type PortonePrepareResponse = {
   };
 };
 
+const BALANCE_UPDATED_EVENT = "songsai:balance-updated";
+
 const creditProducts = [
   { code: "credit_110", credits: 110, priceLabel: "₩11,000", description: "가볍게 시작하기 좋은 기본 충전 팩" },
   { code: "credit_350", credits: 350, priceLabel: "₩33,000", description: "가장 무난한 표준 충전 팩" },
@@ -45,7 +49,7 @@ const usagePolicies = [
   "Suno 음악 생성은 현재 10 크레딧 차감 기준으로 설계되어 있습니다.",
   "ACE-Step 음악 생성은 현재 8 크레딧 차감 기준으로 설계되어 있습니다.",
   "무료 크레딧이 먼저 차감되고, 부족한 경우 유료 크레딧이 이어서 차감됩니다.",
-  "결제 성공 확정은 PortOne 검증 및 webhook 기준으로 처리되며, 프론트 성공 응답만으로는 지급하지 않습니다.",
+  "결제 성공 확정은 PortOne 서버 검증과 webhook 기준으로 처리되며, 프론트 응답만으로는 지급되지 않습니다.",
 ];
 
 export function PricingStudio() {
@@ -55,10 +59,16 @@ export function PricingStudio() {
   const [actionError, setActionError] = useState("");
   const [loadingCode, setLoadingCode] = useState<string | null>(null);
 
+  const loadBalance = useCallback(async () => {
+    const response = await songsaiApiRequest<CreditBalance>("/api/v1/me/balance", { method: "GET" });
+    setBalance(response);
+    return response;
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
 
-    async function loadBalance() {
+    async function loadInitialBalance() {
       try {
         const response = await songsaiApiRequest<CreditBalance>("/api/v1/me/balance", { method: "GET" });
         if (!cancelled) {
@@ -75,12 +85,30 @@ export function PricingStudio() {
       }
     }
 
-    void loadBalance();
+    void loadInitialBalance();
 
     return () => {
       cancelled = true;
     };
   }, []);
+
+  async function waitForBalanceRefresh(previousTotal: number, expectedCredits: number) {
+    for (let attempt = 0; attempt < 8; attempt += 1) {
+      await new Promise((resolve) => window.setTimeout(resolve, 1200));
+
+      try {
+        const refreshed = await loadBalance();
+        if (refreshed.totalCredits >= previousTotal + expectedCredits) {
+          window.dispatchEvent(new CustomEvent(BALANCE_UPDATED_EVENT, { detail: refreshed }));
+          return refreshed;
+        }
+      } catch {
+        // ignore transient polling failures and continue trying
+      }
+    }
+
+    return null;
+  }
 
   async function handleCheckout(productCode: (typeof creditProducts)[number]["code"]) {
     setLoadingCode(productCode);
@@ -88,6 +116,9 @@ export function PricingStudio() {
     setActionMessage("");
 
     try {
+      const selectedProduct = creditProducts.find((item) => item.code === productCode);
+      const previousTotal = balance?.totalCredits ?? 0;
+
       const prepared = await songsaiApiRequest<PortonePrepareResponse>("/api/v1/payments/portone/prepare", {
         method: "POST",
         body: JSON.stringify({ productCode }),
@@ -104,10 +135,6 @@ export function PricingStudio() {
         customer: prepared.customer,
         redirectUrl: prepared.redirectUrl,
         noticeUrls: prepared.noticeUrls,
-        windowType: {
-          pc: WindowType.POPUP,
-          mobile: WindowType.REDIRECTION,
-        },
         customData: {
           productCode,
           paymentOrderId: prepared.paymentOrderId,
@@ -118,7 +145,7 @@ export function PricingStudio() {
       const paymentResult = await requestPayment(paymentRequest);
 
       if (!paymentResult) {
-        setActionMessage("결제창이 열렸습니다. 결제가 끝나면 잔액을 다시 확인해 주세요.");
+        setActionMessage("결제창이 열렸습니다. 결제가 끝나면 이 페이지로 다시 돌아와 상태를 확인해 주세요.");
         return;
       }
 
@@ -137,11 +164,23 @@ export function PricingStudio() {
       });
 
       setBalance(completed.balance);
-      setActionMessage(
-        completed.paid
-          ? "결제가 확인되어 크레딧이 지급되었습니다."
-          : `결제 상태가 아직 확정되지 않았습니다. 현재 상태: ${completed.status}`,
-      );
+
+      if (completed.paid) {
+        window.dispatchEvent(new CustomEvent(BALANCE_UPDATED_EVENT, { detail: completed.balance }));
+        setActionMessage("결제가 확인되어 크레딧이 바로 반영되었습니다.");
+        return;
+      }
+
+      const refreshedBalance = selectedProduct
+        ? await waitForBalanceRefresh(previousTotal, selectedProduct.credits)
+        : null;
+
+      if (refreshedBalance) {
+        setActionMessage("결제가 확인되어 크레딧이 자동으로 갱신되었습니다.");
+        return;
+      }
+
+      setActionMessage(`결제 상태가 아직 확정되지 않았습니다. 현재 상태: ${completed.status}`);
     } catch (error) {
       if (error instanceof SongsaiApiError && error.status === 401) {
         window.location.href = "/login?next=/pricing";
@@ -162,8 +201,8 @@ export function PricingStudio() {
             <p className={styles.eyebrow}>PortOne Credits</p>
             <h2 className={styles.title}>크레딧을 충전하고 음악 생성마다 안정적으로 차감하는 구조로 운영합니다.</h2>
             <p className={styles.description}>
-              SongsAI Music은 PortOne 결제창과 서버 검증, webhook 기반 지급 흐름으로 확장됩니다. 지금은 국내 원화 충전형
-              결제와 크레딧 차감 원장을 먼저 붙여 두는 단계입니다.
+              SongsAI Music은 PortOne 결제창과 서버 검증, webhook 기반 지급 흐름으로 확장됩니다. 지금은 국내 원화
+              충전형 결제와 크레딧 차감 원장을 먼저 붙여두는 단계입니다.
             </p>
             <div className={styles.heroBadgeRow}>
               <span className={styles.heroBadge}>PortOne Checkout</span>
@@ -248,9 +287,10 @@ export function PricingStudio() {
       <section className={styles.ctaSection}>
         <div className={styles.ctaCopy}>
           <p className={styles.eyebrow}>Start Here</p>
-          <h3>충전 후 바로 Create로 이어져 생성 흐름을 테스트할 수 있습니다.</h3>
+          <h3>충전 후 바로 Create로 이어서 생성 흐름을 테스트할 수 있습니다.</h3>
           <p>
-            로그인 상태라면 PortOne 결제창으로 이동해 결제를 시작하고, 서버에서 결제가 확인되면 계정 잔액에 바로 반영됩니다.
+            로그인 상태라면 PortOne 결제창으로 이동해 결제를 시작하고, 서버에서 결제가 확인되면 계정 크레딧에 바로
+            반영됩니다.
           </p>
         </div>
         <div className={styles.ctaButtons}>

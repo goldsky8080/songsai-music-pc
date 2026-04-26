@@ -12,6 +12,8 @@ type CreditBalance = {
   totalCredits: number;
 };
 
+const BALANCE_UPDATED_EVENT = "songsai:balance-updated";
+
 type NavChild = {
   label: string;
   href?: string;
@@ -45,6 +47,16 @@ export function SiteHeader() {
   const [balance, setBalance] = useState<CreditBalance | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const loadBalance = useMemo(
+    () => async () => {
+      const balanceResponse = await songsaiApiRequest<CreditBalance>("/api/v1/me/balance", {
+        method: "GET",
+      });
+      setBalance(balanceResponse);
+    },
+    [],
+  );
+
   useEffect(() => {
     let cancelled = false;
 
@@ -58,12 +70,8 @@ export function SiteHeader() {
           setUser(sessionResponse.user);
         }
 
-        const balanceResponse = await songsaiApiRequest<CreditBalance>("/api/v1/me/balance", {
-          method: "GET",
-        });
-
         if (!cancelled) {
-          setBalance(balanceResponse);
+          await loadBalance();
         }
       } catch (error) {
         if (!cancelled && error instanceof SongsaiApiError && error.status === 401) {
@@ -78,7 +86,28 @@ export function SiteHeader() {
     return () => {
       cancelled = true;
     };
-  }, [pathname]);
+  }, [loadBalance, pathname]);
+
+  useEffect(() => {
+    async function handleBalanceUpdated(event: Event) {
+      const customEvent = event as CustomEvent<CreditBalance | undefined>;
+      if (customEvent.detail) {
+        setBalance(customEvent.detail);
+        return;
+      }
+
+      try {
+        await loadBalance();
+      } catch {
+        // ignore refresh failures and keep the current balance
+      }
+    }
+
+    window.addEventListener(BALANCE_UPDATED_EVENT, handleBalanceUpdated as EventListener);
+    return () => {
+      window.removeEventListener(BALANCE_UPDATED_EVENT, handleBalanceUpdated as EventListener);
+    };
+  }, [loadBalance]);
 
   useEffect(() => {
     setMenuOpen(false);

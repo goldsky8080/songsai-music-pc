@@ -329,10 +329,32 @@
   letter-spacing: 0.08em;
 }
 
+.footerBrandBlock {
+  display: grid;
+  gap: 10px;
+}
+
 .footerMeta {
   margin: 10px 0 0;
   font-size: 13px;
   color: rgba(255, 255, 255, 0.52);
+}
+
+.footerCompany {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.footerCompany p {
+  margin: 0;
+}
+
+.footerLinks {
+  display: grid;
+  gap: 14px;
+  justify-items: end;
 }
 
 .footerNav {
@@ -345,6 +367,20 @@
   color: rgba(255, 255, 255, 0.86);
   text-decoration: none;
   font-size: 15px;
+  font-weight: 600;
+}
+
+.footerLegalNav {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.footerLegalNav a {
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -462,8 +498,16 @@
     text-align: center;
   }
 
+  .footerLinks {
+    justify-items: center;
+  }
+
   .footerNav {
     flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .footerLegalNav {
     justify-content: center;
   }
 }
