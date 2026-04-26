@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { type PublicUser, songsaiApiRequest } from "@/lib/songsai-api";
+import { useRouter } from "next/navigation";
+import { type PublicUser, SongsaiApiError, songsaiApiRequest } from "@/lib/songsai-api";
 import styles from "./account-studio.module.css";
 
 type AccountSummary = {
@@ -31,14 +32,8 @@ type InquiryResponse = {
   items: InquiryItem[];
 };
 
-type AccountStudioProps = {
-  initialUser: PublicUser;
-};
-
 function formatDate(value?: string | null) {
-  if (!value) {
-    return "-";
-  }
+  if (!value) return "-";
 
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
@@ -75,15 +70,17 @@ function getInquiryStatusLabel(status: InquiryItem["status"]) {
   }
 }
 
-export function AccountStudio({ initialUser }: AccountStudioProps) {
-  const [user, setUser] = useState(initialUser);
+export function AccountStudio() {
+  const router = useRouter();
+  const [user, setUser] = useState<PublicUser | null>(null);
+  const [sessionLoaded, setSessionLoaded] = useState(false);
   const [summary, setSummary] = useState<AccountSummary | null>(null);
   const [balance, setBalance] = useState<CreditBalance | null>(null);
   const [summaryLoaded, setSummaryLoaded] = useState(false);
   const [balanceLoaded, setBalanceLoaded] = useState(false);
   const [inquiries, setInquiries] = useState<InquiryItem[]>([]);
   const [inquiriesLoaded, setInquiriesLoaded] = useState(false);
-  const [name, setName] = useState(initialUser.name ?? "");
+  const [name, setName] = useState("");
   const [profileMessage, setProfileMessage] = useState("");
   const [profileError, setProfileError] = useState("");
   const [passwordMessage, setPasswordMessage] = useState("");
@@ -96,27 +93,40 @@ export function AccountStudio({ initialUser }: AccountStudioProps) {
   useEffect(() => {
     let cancelled = false;
 
-    async function load() {
+    async function loadSessionAndData() {
       try {
+        const me = await songsaiApiRequest<{ user: PublicUser }>("/api/v1/me", { method: "GET" });
+
+        if (cancelled) return;
+
+        setUser(me.user);
+        setName(me.user.name ?? "");
+
         const [summaryResponse, inquiryResponse, balanceResponse] = await Promise.all([
           songsaiApiRequest<AccountSummary>("/api/v1/account/summary", { method: "GET" }),
           songsaiApiRequest<InquiryResponse>("/api/v1/account/inquiries", { method: "GET" }),
           songsaiApiRequest<CreditBalance>("/api/v1/me/balance", { method: "GET" }),
         ]);
 
-        if (!cancelled) {
-          setSummary(summaryResponse);
-          setInquiries(inquiryResponse.items ?? []);
-          setBalance(balanceResponse);
+        if (cancelled) return;
+
+        setSummary(summaryResponse);
+        setInquiries(inquiryResponse.items ?? []);
+        setBalance(balanceResponse);
+      } catch (error) {
+        if (cancelled) return;
+
+        if (error instanceof SongsaiApiError && error.status === 401) {
+          router.replace("/login?next=/account");
+          return;
         }
-      } catch {
-        if (!cancelled) {
-          setSummary(null);
-          setInquiries([]);
-          setBalance(null);
-        }
+
+        setSummary(null);
+        setInquiries([]);
+        setBalance(null);
       } finally {
         if (!cancelled) {
+          setSessionLoaded(true);
           setSummaryLoaded(true);
           setInquiriesLoaded(true);
           setBalanceLoaded(true);
@@ -124,14 +134,14 @@ export function AccountStudio({ initialUser }: AccountStudioProps) {
       }
     }
 
-    void load();
+    void loadSessionAndData();
 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [router]);
 
-  const roleLabel = useMemo(() => getRoleLabel(user.role), [user.role]);
+  const roleLabel = useMemo(() => (user ? getRoleLabel(user.role) : "-"), [user]);
 
   async function handleProfileSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -156,7 +166,7 @@ export function AccountStudio({ initialUser }: AccountStudioProps) {
       setName(response.user.name ?? trimmedName);
       setProfileMessage(response.message ?? "프로필이 업데이트되었습니다.");
     } catch (error) {
-      setProfileError(error instanceof Error ? error.message : "프로필 저장에 실패했습니다.");
+      setProfileError(error instanceof Error ? error.message : "프로필 수정에 실패했습니다.");
     } finally {
       setSavingProfile(false);
     }
@@ -196,6 +206,22 @@ export function AccountStudio({ initialUser }: AccountStudioProps) {
     }
   }
 
+  if (!sessionLoaded || !user) {
+    return (
+      <section className={styles.section}>
+        <div className={styles.layout}>
+          <article className={styles.primaryCard}>
+            <div className={styles.header}>
+              <p className={styles.eyebrow}>My Account</p>
+              <h2 className={styles.title}>계정 정보를 불러오고 있습니다.</h2>
+              <p className={styles.description}>세션 확인 후 계정 정보와 크레딧 상태를 표시합니다.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className={styles.section}>
       <div className={styles.layout}>
@@ -204,7 +230,7 @@ export function AccountStudio({ initialUser }: AccountStudioProps) {
             <p className={styles.eyebrow}>My Account</p>
             <h2 className={styles.title}>계정 정보와 크레딧 상태를 한 화면에서 관리합니다.</h2>
             <p className={styles.description}>
-              SongsAI Music 계정 기준으로 생성 이력, 문의 내역, 보안 설정, 크레딧 잔액을 함께 확인할 수 있습니다.
+              SongsAI Music 계정을 기준으로 생성 이력, 문의 내역, 보안 설정, 크레딧 잔액을 함께 확인할 수 있습니다.
             </p>
           </div>
 
@@ -256,7 +282,7 @@ export function AccountStudio({ initialUser }: AccountStudioProps) {
           <form className={styles.form} onSubmit={handleProfileSubmit}>
             <label className={styles.field}>
               <span>이름</span>
-              <input value={name} onChange={(event) => setName(event.target.value)} placeholder="이름을 입력해 주세요" />
+              <input value={name} onChange={(event) => setName(event.target.value)} placeholder="이름을 입력해 주세요." />
             </label>
 
             {profileError ? <p className={styles.error}>{profileError}</p> : null}
@@ -329,7 +355,7 @@ export function AccountStudio({ initialUser }: AccountStudioProps) {
           <h3>문의 내역</h3>
           <div className={styles.inquiryList}>
             {inquiriesLoaded && inquiries.length === 0 ? (
-              <p className={styles.empty}>아직 접수된 문의가 없습니다. 필요한 경우 Support에서 바로 문의를 남길 수 있습니다.</p>
+              <p className={styles.empty}>아직 접수된 문의가 없습니다. 필요하면 Support에서 바로 문의할 수 있습니다.</p>
             ) : null}
 
             {!inquiriesLoaded ? <p className={styles.empty}>문의 내역을 불러오는 중입니다.</p> : null}
