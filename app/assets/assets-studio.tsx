@@ -54,6 +54,14 @@ type VisibilityResponse = {
     isPublic: boolean;
   };
 };
+type ShareResponse = {
+  item: {
+    id: string;
+    shareUrl: string;
+    mp3AssetReady: boolean;
+    coverAssetReady: boolean;
+  };
+};
 
 type MusicGroup = {
   id: string;
@@ -256,6 +264,7 @@ export function AssetsStudio() {
   const [playingUrl, setPlayingUrl] = useState<string | null>(null);
   const [isCreatingVideoId, setIsCreatingVideoId] = useState<string | null>(null);
   const [isUpdatingVisibilityId, setIsUpdatingVisibilityId] = useState<string | null>(null);
+  const [isPreparingShareId, setIsPreparingShareId] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [nextOffset, setNextOffset] = useState(0);
@@ -485,10 +494,9 @@ export function AssetsStudio() {
   }
 
   async function handleCopyShareUrl(item: MusicItem) {
-    if (item.isPublic === false) {
+    if (item.isPublic === false || !isStabilized(item.createdAt)) {
       setShareTooltipId(null);
       setMessage(null);
-      setError("공유 링크는 Public 곡에서만 복사할 수 있습니다. 먼저 공개로 전환해 주세요.");
       return;
     }
 
@@ -497,7 +505,14 @@ export function AssetsStudio() {
     }
 
     try {
-      const copied = await copyText(`${window.location.origin}/share/${item.id}`);
+      setIsPreparingShareId(item.id);
+      setError(null);
+      setMessage(null);
+
+      const response = await songsaiApiRequest<ShareResponse>(`/api/v1/music/${item.id}/share`, {
+        method: "POST",
+      });
+      const copied = await copyText(response.item.shareUrl);
       setError(null);
       setMessage(null);
       setShareTooltipId(copied ? item.id : null);
@@ -506,10 +521,16 @@ export function AssetsStudio() {
           setShareTooltipId((current) => (current === item.id ? null : current));
         }, 1800);
       }
-    } catch {
+    } catch (requestError) {
       setShareTooltipId(null);
       setMessage(null);
-      setError("공유 링크 복사에 실패했습니다.");
+      setError(
+        requestError instanceof SongsaiApiError
+          ? requestError.message
+          : "공유 링크 복사에 실패했습니다.",
+      );
+    } finally {
+      setIsPreparingShareId((current) => (current === item.id ? null : current));
     }
   }
 
@@ -613,6 +634,7 @@ export function AssetsStudio() {
                       activeItem.videoStatus === "queued" || activeItem.videoStatus === "processing";
                     const canCreateVideo =
                       !isAceStepItem && ready && Boolean(activeItem.canCreateVideo) && !canDownloadVideo && !isVideoPending;
+                    const canShare = ready && activeItem.isPublic !== false;
                     const videoProgress = getSimulatedVideoProgress(
                       activeItem,
                       progressTick,
@@ -765,10 +787,11 @@ export function AssetsStudio() {
                             </a>
                             <button
                               type="button"
-                              className={styles.assetButton}
+                              className={canShare && isPreparingShareId !== activeItem.id ? styles.assetButton : styles.assetButtonDisabled}
+                              disabled={!canShare || isPreparingShareId === activeItem.id}
                               onClick={() => void handleCopyShareUrl(activeItem)}
                             >
-                              공유
+                              {isPreparingShareId === activeItem.id ? "공유 준비중.." : "공유"}
                             </button>
                             {shareTooltipId === activeItem.id ? (
                               <span className={styles.shareTooltip} role="status" aria-live="polite">

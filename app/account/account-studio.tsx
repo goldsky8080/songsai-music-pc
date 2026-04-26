@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-
 import { type PublicUser, songsaiApiRequest } from "@/lib/songsai-api";
-
 import styles from "./account-studio.module.css";
 
 type AccountSummary = {
@@ -13,6 +11,12 @@ type AccountSummary = {
   supportCount: number;
   latestActivityAt: string | null;
   joinedAt: string;
+};
+
+type CreditBalance = {
+  freeCredits: number;
+  paidCredits: number;
+  totalCredits: number;
 };
 
 type InquiryItem = {
@@ -59,7 +63,7 @@ function getRoleLabel(role: PublicUser["role"]) {
 function getInquiryStatusLabel(status: InquiryItem["status"]) {
   switch (status) {
     case "NEW":
-      return "접수됨";
+      return "접수";
     case "READ":
       return "확인 중";
     case "REPLIED":
@@ -74,7 +78,9 @@ function getInquiryStatusLabel(status: InquiryItem["status"]) {
 export function AccountStudio({ initialUser }: AccountStudioProps) {
   const [user, setUser] = useState(initialUser);
   const [summary, setSummary] = useState<AccountSummary | null>(null);
+  const [balance, setBalance] = useState<CreditBalance | null>(null);
   const [summaryLoaded, setSummaryLoaded] = useState(false);
+  const [balanceLoaded, setBalanceLoaded] = useState(false);
   const [inquiries, setInquiries] = useState<InquiryItem[]>([]);
   const [inquiriesLoaded, setInquiriesLoaded] = useState(false);
   const [name, setName] = useState(initialUser.name ?? "");
@@ -92,24 +98,28 @@ export function AccountStudio({ initialUser }: AccountStudioProps) {
 
     async function load() {
       try {
-        const [summaryResponse, inquiryResponse] = await Promise.all([
+        const [summaryResponse, inquiryResponse, balanceResponse] = await Promise.all([
           songsaiApiRequest<AccountSummary>("/api/v1/account/summary", { method: "GET" }),
           songsaiApiRequest<InquiryResponse>("/api/v1/account/inquiries", { method: "GET" }),
+          songsaiApiRequest<CreditBalance>("/api/v1/me/balance", { method: "GET" }),
         ]);
 
         if (!cancelled) {
           setSummary(summaryResponse);
           setInquiries(inquiryResponse.items ?? []);
+          setBalance(balanceResponse);
         }
       } catch {
         if (!cancelled) {
           setSummary(null);
           setInquiries([]);
+          setBalance(null);
         }
       } finally {
         if (!cancelled) {
           setSummaryLoaded(true);
           setInquiriesLoaded(true);
+          setBalanceLoaded(true);
         }
       }
     }
@@ -192,10 +202,9 @@ export function AccountStudio({ initialUser }: AccountStudioProps) {
         <article className={styles.primaryCard}>
           <div className={styles.header}>
             <p className={styles.eyebrow}>My Account</p>
-            <h2 className={styles.title}>계정 정보와 보안 상태를 한곳에 모았습니다</h2>
+            <h2 className={styles.title}>계정 정보와 크레딧 상태를 한 화면에서 관리합니다.</h2>
             <p className={styles.description}>
-              SongsAI Music은 계정 기준으로 생성 이력, 자산, 문의 흐름을 이어갑니다. 여기서 이름과 보안 상태를
-              확인하고 바로 다음 작업으로 이동할 수 있습니다.
+              SongsAI Music 계정 기준으로 생성 이력, 문의 내역, 보안 설정, 크레딧 잔액을 함께 확인할 수 있습니다.
             </p>
           </div>
 
@@ -216,6 +225,29 @@ export function AccountStudio({ initialUser }: AccountStudioProps) {
               <span>가입일</span>
               <strong>{formatDate(summary?.joinedAt ?? user.createdAt ?? null)}</strong>
             </div>
+          </div>
+        </article>
+
+        <article className={styles.panel}>
+          <h3>크레딧</h3>
+          <div className={styles.creditGrid}>
+            <div className={styles.creditCard}>
+              <span>Total</span>
+              <strong>{balanceLoaded ? balance?.totalCredits ?? 0 : "-"}</strong>
+            </div>
+            <div className={styles.creditCard}>
+              <span>Free</span>
+              <strong>{balanceLoaded ? balance?.freeCredits ?? 0 : "-"}</strong>
+            </div>
+            <div className={styles.creditCard}>
+              <span>Paid</span>
+              <strong>{balanceLoaded ? balance?.paidCredits ?? 0 : "-"}</strong>
+            </div>
+          </div>
+          <div className={styles.linkGrid}>
+            <Link href="/pricing" className={styles.linkButton}>
+              크레딧 충전하기
+            </Link>
           </div>
         </article>
 
@@ -297,7 +329,7 @@ export function AccountStudio({ initialUser }: AccountStudioProps) {
           <h3>문의 내역</h3>
           <div className={styles.inquiryList}>
             {inquiriesLoaded && inquiries.length === 0 ? (
-              <p className={styles.empty}>아직 남긴 문의가 없습니다. 문제가 생기면 Support에서 바로 문의를 남길 수 있습니다.</p>
+              <p className={styles.empty}>아직 접수된 문의가 없습니다. 필요한 경우 Support에서 바로 문의를 남길 수 있습니다.</p>
             ) : null}
 
             {!inquiriesLoaded ? <p className={styles.empty}>문의 내역을 불러오는 중입니다.</p> : null}

@@ -54,7 +54,8 @@
 
 .infoGrid,
 .summaryGrid,
-.linkGrid {
+.linkGrid,
+.creditGrid {
   display: grid;
   gap: 16px;
 }
@@ -65,7 +66,8 @@
 }
 
 .infoTile,
-.summaryTile {
+.summaryTile,
+.creditCard {
   border: 1px solid #e7ded3;
   background: rgba(255, 255, 255, 0.82);
   padding: 18px 20px;
@@ -74,7 +76,8 @@
 }
 
 .infoTile span,
-.summaryTile span {
+.summaryTile span,
+.creditCard span {
   font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -82,10 +85,21 @@
 }
 
 .infoTile strong,
-.summaryTile strong {
+.summaryTile strong,
+.creditCard strong {
   color: #111827;
   font-size: 18px;
   line-height: 1.35;
+}
+
+.creditGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.creditCard {
+  background:
+    radial-gradient(circle at top right, rgba(215, 127, 74, 0.18), transparent 34%),
+    rgba(255, 255, 255, 0.9);
 }
 
 .panel {

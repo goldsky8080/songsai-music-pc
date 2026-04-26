@@ -6,6 +6,12 @@ import { type PublicUser, SongsaiApiError, songsaiApiRequest } from "@/lib/songs
 
 import styles from "./site-shell.module.css";
 
+type CreditBalance = {
+  freeCredits: number;
+  paidCredits: number;
+  totalCredits: number;
+};
+
 type NavChild = {
   label: string;
   href?: string;
@@ -36,28 +42,38 @@ function isActive(pathname: string, href: string) {
 export function SiteHeader() {
   const pathname = usePathname();
   const [user, setUser] = useState<PublicUser | null>(null);
+  const [balance, setBalance] = useState<CreditBalance | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
-    async function loadSession() {
+    async function loadSessionAndBalance() {
       try {
-        const response = await songsaiApiRequest<{ user: PublicUser }>("/api/v1/me", {
+        const sessionResponse = await songsaiApiRequest<{ user: PublicUser }>("/api/v1/me", {
           method: "GET",
         });
 
         if (!cancelled) {
-          setUser(response.user);
+          setUser(sessionResponse.user);
+        }
+
+        const balanceResponse = await songsaiApiRequest<CreditBalance>("/api/v1/me/balance", {
+          method: "GET",
+        });
+
+        if (!cancelled) {
+          setBalance(balanceResponse);
         }
       } catch (error) {
         if (!cancelled && error instanceof SongsaiApiError && error.status === 401) {
           setUser(null);
+          setBalance(null);
         }
       }
     }
 
-    void loadSession();
+    void loadSessionAndBalance();
 
     return () => {
       cancelled = true;
@@ -172,6 +188,13 @@ export function SiteHeader() {
             <a href="/create" className={styles.createButton}>
               Create
             </a>
+
+            {user ? (
+              <a href="/pricing" className={styles.creditPill} aria-label={`보유 크레딧 ${balance?.totalCredits ?? 0}`}>
+                <span className={styles.creditPillLabel}>Credits</span>
+                <strong>{balance?.totalCredits ?? 0}</strong>
+              </a>
+            ) : null}
 
             {user ? (
               <div className={`${styles.navItem} ${styles.userMenuItem}`}>
