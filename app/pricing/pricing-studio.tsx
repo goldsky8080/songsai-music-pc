@@ -17,11 +17,17 @@ type PortonePrepareResponse = {
   paymentOrderId: string;
   storeId: string;
   channelKey: string;
+  pgProvider?: string;
   redirectUrl: string;
   noticeUrls: string[];
   orderName: string;
   totalAmount: number;
   currency: "KRW";
+  bypass?: {
+    galaxia?: {
+      ITEM_CODE?: string;
+    };
+  };
   customer: {
     customerId?: string;
     fullName?: string;
@@ -106,6 +112,7 @@ export function PricingStudio() {
           productCode,
           paymentOrderId: prepared.paymentOrderId,
         },
+        bypass: prepared.bypass,
       } as unknown as Parameters<typeof requestPayment>[0];
 
       const paymentResult = await requestPayment(paymentRequest);
