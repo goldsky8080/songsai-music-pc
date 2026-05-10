@@ -69,7 +69,6 @@ type VideoResponse = {
     mp4Url?: string | null;
   };
 };
-
 type MusicGroup = {
   id: string;
   items: MusicItem[];
@@ -1005,8 +1004,9 @@ export function CreateStudio({ mode = "suno" }: CreateStudioProps) {
               {groupedItems.length > 0 ? (
                 <div className={styles.requestGrid}>
                   {groupedItems.map((group, groupIndex) => {
-                    const activeIndex = Math.min(activeSlides[group.id] ?? 0, Math.max(group.items.length - 1, 0));
-                    const activeItem = group.items[activeIndex];
+                    const visibleItems = group.items;
+                    const activeIndex = Math.min(activeSlides[group.id] ?? 0, Math.max(visibleItems.length - 1, 0));
+                    const activeItem = visibleItems[activeIndex] ?? group.items[0];
                     const isAceStepItem = activeItem.provider === "ACE_STEP";
                     const ready = isStabilized(activeItem.createdAt);
                     const canDownloadVideo = Boolean(
@@ -1056,22 +1056,22 @@ export function CreateStudio({ mode = "suno" }: CreateStudioProps) {
                             </button>
                           ) : null}
                           <span className={getStatusClassName(activeItem.status)}>{formatStatusLabel(activeItem.status)}</span>
-                          {group.items.length > 1 ? (
+                          {visibleItems.length > 1 ? (
                             <div className={styles.slideControls}>
                               <button
                                 type="button"
                                 className={styles.slideButton}
-                                onClick={() => moveSlide(group.id, group.items.length, -1)}
+                                onClick={() => moveSlide(group.id, visibleItems.length, -1)}
                               >
                                 ‹
                               </button>
                               <span className={styles.slideIndicator}>
-                                {activeIndex + 1} / {group.items.length}
+                                {activeIndex + 1} / {visibleItems.length}
                               </span>
                               <button
                                 type="button"
                                 className={styles.slideButton}
-                                onClick={() => moveSlide(group.id, group.items.length, 1)}
+                                onClick={() => moveSlide(group.id, visibleItems.length, 1)}
                               >
                                 ›
                               </button>

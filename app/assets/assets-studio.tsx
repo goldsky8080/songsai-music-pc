@@ -62,7 +62,6 @@ type ShareResponse = {
     coverAssetReady: boolean;
   };
 };
-
 type MusicGroup = {
   id: string;
   items: MusicItem[];

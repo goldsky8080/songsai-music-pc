@@ -133,6 +133,7 @@ export function SiteHeader() {
         label: "Studio",
         children: [
           { href: "/create", label: "Create" },
+          { href: "/upload-source", label: "Upload Source" },
           { href: "/ace-step", label: "ACE-Step" },
           { href: "/assets", label: "My Assets" },
         ],
